@@ -170,7 +170,7 @@ Private Sub 清除空格()
         .Wrap = wdFindStop
         .Execute Replace:=wdReplaceAll
         '不明字符，不间断空格
-        .Text = "^s"
+        .Text = "^w"
         .Replacement.Text = ""
         .Execute Replace:=wdReplaceAll
     End With
@@ -298,62 +298,141 @@ Private Sub 二级标题()
     Application.ScreenUpdating = False '关闭屏幕更新
     nums = Array("一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十")
    
-        pn = ActiveDocument.Paragraphs.Count
-        Dim prg As Paragraph
-        For i = 1 To ActiveDocument.Paragraphs.Count
-            If i > ActiveDocument.Paragraphs.Count Then
-                Exit For
-            End If
-            
-            Set prg = ActiveDocument.Paragraphs(i)
-           For j = 0 To UBound(nums)
-               numtxt = nums(j)
-              numlen = Len(numtxt) + 2
-                Debug.Print Left(prg.Range.Text, numlen)
-               If Left(prg.Range.Text, numlen) = "（" & numtxt & "）" Then
+    pn = ActiveDocument.Paragraphs.Count
+    Dim prg As Paragraph
+    For i = 1 To ActiveDocument.Paragraphs.Count
+        If i > ActiveDocument.Paragraphs.Count Then
+            Exit For
+        End If
+        '获取下一段的开头
+        Dim nextPreStr As String
+        If i + 1 <= ActiveDocument.Paragraphs.Count Then
+            nextPreStr = Left(ActiveDocument.Paragraphs(i + 1), 2)
+        End If
+        
+        Set prg = ActiveDocument.Paragraphs(i)
+        For j = 0 To UBound(nums)
+            numtxt = nums(j)
+            numlen = Len(numtxt) + 2
+            Debug.Print Left(prg.Range.Text, numlen)
+            '二级标题匹配成功
+            If Left(prg.Range.Text, numlen) = "（" & numtxt & "）" Then
                 Debug.Print numtxt
-                With prg.Range.Font
-                    .NameFarEast = "楷体_GB2312"
-                    .NameAscii = "楷体_GB2312"
-                    .name = "楷体_GB2312"
-                    .Size = 16
-                    .Bold = False
-                End With
-                '这个判断有点问题
+                '如果段尾没有句号，格式化段落后添加句号，合并后面段落
                 If (clearParagraphEnd(Right(prg.Range.Text, 2)) <> "。") Then
-                        With prg.Range.Find
-                            .Text = "^p"
-                            .Replacement.Text = "。"
-                            .Execute Replace:=wdReplaceAll
-                        End With
+                    '格式化段落
+                    formatRng prg.Range
+                    addJuHao prg.Range
+                    combineNext prg.Range, nextPreStr
+                Else
+                    '如果段尾是句号，且不止一个，提取出第一句然后格式化
+                    If countStr(prg.Range.Text, "。") > 1 Then
+                        Dim trng As Range
+                        Set trng = prg.Range
+                        trng.Find.Execute ("。")
+                        prg.Range.SetRange prg.Range.start, trng.End
+                        '格式化第一句
+                        formatRng prg.Range
+                    '如果段尾是句号且整段只有一个，格式化本段后，合并后面段落
+                    Else
+                         If countStr(prg.Range.Text, "。") = 1 Then
+                            '格式化段落
+                            formatRng prg.Range
+                            combineNext prg.Range, nextPreStr
+                         End If
+                    End If
+                    
                 End If
             End If
         Next j
     Next i
-    
+
     Application.ScreenUpdating = True '恢复屏幕更新
 End Sub
 
-Private Sub 公文标题()
-    With ActiveDocument.Paragraphs(1).Range.Font
-        .NameFarEast = "方正小标宋_GBK"
-        .NameAscii = "方正小标宋_GBK"
-        .NameOther = "Times New Roman"
-        .name = "方正小标宋_GBK"
-        .Size = 22
+Private Function countStr(srcStr As String, findStr As String) As Integer
+    countStr = Len(s) - Len(Replace(srcStr, findStr, ""))
+End Function
+
+Private Sub formatRng(rng As Range)
+    With rng.Font
+        .NameFarEast = "楷体_GB2312"
+        .NameAscii = "楷体_GB2312"
+        .name = "楷体_GB2312"
+        .Size = 16
         .Bold = False
     End With
-    With ActiveDocument.Paragraphs(1).Range.ParagraphFormat
-        .FirstLineIndent = CentimetersToPoints(0)
-        .CharacterUnitFirstLineIndent = 0
-        .LineSpacingRule = wdLineSpaceExactly
-        .LineSpacing = 33
-        .Alignment = wdAlignParagraphCenter
-        .LineUnitBefore = 1
-        .LineUnitAfter = 1
-        .FirstLineIndent = CentimetersToPoints(0)
-        .CharacterUnitFirstLineIndent = 0
+
+End Sub
+'段尾加句号
+Private Sub addJuHao(rng As Range)
+    rng.MoveEnd wdWord, -1
+    rng.InsertAfter ("。")
+End Sub
+
+'合并后段，不论段尾有没有句号，如果后面是三级标题的1.，不合并段落
+Private Sub combineNext(rng As Range, nextPreStr As String)
+    If nextPreStr = "1." Or nextPreStr = "1、" Or nextPreStr = "1．" Then
+        Exit Sub
+    End If
+    
+    With rng.Find
+        .Text = "^p"
+        .Replacement.Text = ""
+        .Execute Replace:=wdReplaceAll
     End With
+
+End Sub
+
+
+Private Sub 公文标题()
+    For i = 1 To ActiveDocument.Paragraphs.Count
+        With ActiveDocument.Paragraphs(i).Range
+            EndChar = Left(Right(.Text, 2), 1)
+            If EndChar <> "。" And EndChar <> "：" Then
+                Debug.Print EndChar
+                '如果含有"号""字"等，为文号处理
+                If EndChar = "号" And InStr(.Text, "字") > 0 Then
+                    With .ParagraphFormat
+                        .Alignment = wdAlignParagraphCenter
+                        .FirstLineIndent = CentimetersToPoints(0)
+                        .CharacterUnitFirstLineIndent = 0
+                    End With
+                Else
+                    '段尾没有标点符号，作为标题处理
+                    With .Font
+                        .NameFarEast = "方正小标宋_GBK"
+                        .NameAscii = "方正小标宋_GBK"
+                        .NameOther = "Times New Roman"
+                        .name = "方正小标宋_GBK"
+                        .Size = 22
+                        .Bold = False
+                    End With
+                    With .ParagraphFormat
+                        .LineSpacingRule = wdLineSpaceExactly
+                        .LineSpacing = 33
+                        .Alignment = wdAlignParagraphCenter
+                        .LineUnitBefore = 1
+                        .LineUnitAfter = 1
+                        .CharacterUnitFirstLineIndent = 0
+                        .FirstLineIndent = CentimetersToPoints(0)
+                    End With
+                End If
+            Else
+                If Left(Right(.Text, 2), 1) = "：" Then
+                    '段尾有冒号，则是抬头
+                    With .ParagraphFormat
+                        .Alignment = wdAlignParagraphLeft
+                        .CharacterUnitFirstLineIndent = 0
+                        .FirstLineIndent = CentimetersToPoints(0)
+                    End With
+                End If
+                '非标题，且抬头处理完毕，跳出扫描循环
+                Exit For
+            End If
+        End With
+    Next i
+    
 End Sub
 
 Private Sub 图注0()
@@ -368,6 +447,7 @@ Private Sub 图注0()
         .Bold = False
     End With
     With Selection.ParagraphFormat
+                        .FirstLineIndent = CentimetersToPoints(0)
         .CharacterUnitFirstLineIndent = 0
     End With
     Selection.Range.Text = LTrim(Selection.Range.Text)
@@ -394,6 +474,7 @@ Private Sub 表注()
                     .Bold = False
                 End With
                 With Selection.ParagraphFormat
+                        .FirstLineIndent = CentimetersToPoints(0)
                     .CharacterUnitFirstLineIndent = 0
                 End With
                 Selection.Range.ParagraphFormat.Alignment = wdAlignParagraphCenter
