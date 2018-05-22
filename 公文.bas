@@ -1,5 +1,6 @@
 Attribute VB_Name = "公文"
 Public Sub 公文排版()
+    ActiveDocument.TrackRevisions = False '关闭修订
     Application.ScreenUpdating = False '关闭屏幕更新
     公文页面
     清除空格
@@ -61,9 +62,10 @@ Private Sub 附件正文()
                 End With
                 Selection.MoveLeft
                 Selection.InsertBreak Type:=wdPageBreak
+                '附件标题
                 Selection.MoveDown
                 Selection.Expand Unit:=wdParagraph
-                                With Selection.Font
+                With Selection.Font
                     .NameFarEast = "黑体"
                     .NameAscii = "黑体"
                     .NameOther = "Times New Roman"
@@ -77,6 +79,39 @@ Private Sub 附件正文()
                     .CharacterUnitFirstLineIndent = 0
                     .FirstLineIndent = CentimetersToPoints(0)
                 End With
+                '附件副标题
+                Selection.MoveDown
+                Selection.Expand Unit:=wdParagraph
+                If Left(Right(Selection.Text, 2), 1) <> "。" And Left(Right(Selection.Text, 2), 1) <> "：" Then
+                        '副标题
+                        With Selection.Font
+                            .NameFarEast = "楷体_GB2312"
+                            .NameAscii = "楷体_GB2312"
+                            .NameOther = "Times New Roman"
+                            .name = "楷体_GB2312"
+                            .Size = 16
+                            .Bold = False
+                        End With
+                        With Selection.ParagraphFormat
+                            .LineSpacingRule = wdLineSpaceExactly
+                            .LineSpacing = 33
+                            .Alignment = wdAlignParagraphCenter
+                            .LineUnitBefore = 0
+                            .LineUnitAfter = 1
+                            .CharacterUnitFirstLineIndent = 0
+                            .FirstLineIndent = CentimetersToPoints(0)
+                        End With
+                        ActiveDocument.Paragraphs(i - 1).Range.ParagraphFormat.LineUnitAfter = 0
+                        ActiveDocument.Paragraphs(i - 1).Range.ParagraphFormat.SpaceAfter = 0
+                If Left(Right(Selection.Text, 2), 1) = "：" Then
+                    '段尾有冒号，则是抬头
+                    With Selection.ParagraphFormat
+                        .Alignment = wdAlignParagraphLeft
+                        .CharacterUnitFirstLineIndent = 0
+                        .FirstLineIndent = CentimetersToPoints(0)
+                    End With
+                End If
+                End If
                  Exit For
             End If
         End With
@@ -162,6 +197,13 @@ End Sub
 
 '清除手动分段符、特殊格式字符、Trim空格
 Private Sub 清除空格()
+    
+    pn = ActiveDocument.Paragraphs.Count
+    For i = 1 To pn
+        If ActiveDocument.Paragraphs(i).Range.Information(wdWithInTable) = False And ActiveDocument.Paragraphs(i).Range.InlineShapes.Count = 0 And ActiveDocument.Paragraphs(i).Range.Find.Execute(FindText:="表^#：") = False Then
+            ActiveDocument.Paragraphs(i).Range.Text = Trim(ActiveDocument.Paragraphs(i).Range.Text)
+        End If
+    Next i
     With ActiveDocument.Range.Find
         .ClearFormatting
         .Replacement.ClearFormatting
@@ -170,16 +212,27 @@ Private Sub 清除空格()
         .Wrap = wdFindStop
         .Execute Replace:=wdReplaceAll
         '不明字符，不间断空格
-        .Text = "^w"
-        .Replacement.Text = ""
+        .Text = "^w^p"
+        .Replacement.Text = "^p"
+        .Execute Replace:=wdReplaceAll
+        '不明字符，不间断空格
+        .Text = "^p^w"
+        .Replacement.Text = "^p"
         .Execute Replace:=wdReplaceAll
     End With
-    pn = ActiveDocument.Paragraphs.Count
-    For i = 1 To pn
-        If ActiveDocument.Paragraphs(i).Range.Information(wdWithInTable) = False And ActiveDocument.Paragraphs(i).Range.InlineShapes.Count = 0 And ActiveDocument.Paragraphs(i).Range.Find.Execute(FindText:="表^#：") = False Then
-            ActiveDocument.Paragraphs(i).Range.Text = Trim(ActiveDocument.Paragraphs(i).Range.Text)
-        End If
-    Next i
+'    For i = 1 To pn
+'    With ActiveDocument.Paragraphs(i).Range
+'        If .Information(wdWithInTable) = False And .InlineShapes.Count = 0 And .Find.Execute(FindText:="表^#：") = False And Left(.Text, 1) <> "图" Then
+'        With .Find
+'        '不明字符，不间断空格
+'        .Text = "^w"
+'        .Replacement.Text = ""
+'        .Execute Replace:=wdReplaceAll
+'        End With
+'        End If
+'    End With
+'    Next i
+
 End Sub
 
 Private Sub 表格格式()
@@ -319,7 +372,7 @@ Private Sub 二级标题()
             If Left(prg.Range.Text, numlen) = "（" & numtxt & "）" Then
                 Debug.Print numtxt
                 '如果段尾没有句号，格式化段落后添加句号，合并后面段落
-                If (clearParagraphEnd(Right(prg.Range.Text, 2)) <> "。") Then
+                If Left(Right(prg.Range.Text, 2), 1) <> "。" Then
                     '格式化段落
                     formatRng prg.Range
                     addJuHao prg.Range
@@ -330,9 +383,9 @@ Private Sub 二级标题()
                         Dim trng As Range
                         Set trng = prg.Range
                         trng.Find.Execute ("。")
-                        prg.Range.SetRange prg.Range.start, trng.End
+                        trng.SetRange prg.Range.start, trng.End
                         '格式化第一句
-                        formatRng prg.Range
+                        formatRng trng
                     '如果段尾是句号且整段只有一个，格式化本段后，合并后面段落
                     Else
                          If countStr(prg.Range.Text, "。") = 1 Then
@@ -351,7 +404,7 @@ Private Sub 二级标题()
 End Sub
 
 Private Function countStr(srcStr As String, findStr As String) As Integer
-    countStr = Len(s) - Len(Replace(srcStr, findStr, ""))
+    countStr = Len(srcStr) - Len(Replace(srcStr, findStr, ""))
 End Function
 
 Private Sub formatRng(rng As Range)
@@ -400,23 +453,48 @@ Private Sub 公文标题()
                     End With
                 Else
                     '段尾没有标点符号，作为标题处理
-                    With .Font
-                        .NameFarEast = "方正小标宋_GBK"
-                        .NameAscii = "方正小标宋_GBK"
-                        .NameOther = "Times New Roman"
-                        .name = "方正小标宋_GBK"
-                        .Size = 22
-                        .Bold = False
-                    End With
-                    With .ParagraphFormat
-                        .LineSpacingRule = wdLineSpaceExactly
-                        .LineSpacing = 33
-                        .Alignment = wdAlignParagraphCenter
-                        .LineUnitBefore = 1
-                        .LineUnitAfter = 1
-                        .CharacterUnitFirstLineIndent = 0
-                        .FirstLineIndent = CentimetersToPoints(0)
-                    End With
+                    Dim isZBT
+                    If i = 1 Then
+                        '主标题
+                        With .Font
+                            .NameFarEast = "方正小标宋_GBK"
+                            .NameAscii = "方正小标宋_GBK"
+                            .NameOther = "Times New Roman"
+                            .name = "方正小标宋_GBK"
+                            .Size = 22
+                            .Bold = False
+                        End With
+                        With .ParagraphFormat
+                            .LineSpacingRule = wdLineSpaceExactly
+                            .LineSpacing = 33
+                            .Alignment = wdAlignParagraphCenter
+                            .LineUnitBefore = 1
+                            .LineUnitAfter = 1
+                            .CharacterUnitFirstLineIndent = 0
+                            .FirstLineIndent = CentimetersToPoints(0)
+                        End With
+                    Else
+                        '副标题
+                        With .Font
+                            .NameFarEast = "楷体_GB2312"
+                            .NameAscii = "楷体_GB2312"
+                            .NameOther = "Times New Roman"
+                            .name = "楷体_GB2312"
+                            .Size = 16
+                            .Bold = False
+                        End With
+                        With .ParagraphFormat
+                            .LineSpacingRule = wdLineSpaceExactly
+                            .LineSpacing = 33
+                            .Alignment = wdAlignParagraphCenter
+                            .LineUnitBefore = 0
+                            .LineUnitAfter = 1
+                            .CharacterUnitFirstLineIndent = 0
+                            .FirstLineIndent = CentimetersToPoints(0)
+                        End With
+                        ActiveDocument.Paragraphs(i - 1).Range.ParagraphFormat.LineUnitAfter = 0
+                        ActiveDocument.Paragraphs(i - 1).Range.ParagraphFormat.SpaceAfter = 0
+                    End If
                 End If
             Else
                 If Left(Right(.Text, 2), 1) = "：" Then
@@ -529,9 +607,25 @@ Private Sub 一级标题()
                numtxt = nums(j) & "、"
               numlen = Len(numtxt)
                 Debug.Print Left(prg.Range.Text, numlen)
-               If Left(prg.Range.Text, numlen) = numtxt Then
+                If Left(prg.Range.Text, numlen) = numtxt Then
+                If Left(Right(prg.Range.Text, 2), 1) = "。" Then
+                        Dim trng As Range
+                        Set trng = prg.Range
+                        trng.Find.Execute ("。")
+                        trng.SetRange prg.Range.start, trng.End
+                        trng.InsertAfter vbCrLf
+                        oneTitleFormat trng
+                Else
+                    oneTitleFormat prg.Range
+                End If
                 Debug.Print numtxt
-                With prg.Range.Font
+            End If
+        Next j
+    Next i
+End Sub
+
+Sub oneTitleFormat(rng As Range)
+                With rng.Font
                     .NameFarEast = "黑体"
                     .NameAscii = "黑体"
                     .NameOther = "Times New Roman"
@@ -539,35 +633,35 @@ Private Sub 一级标题()
                     .Size = 16
                     .Bold = False
                 End With
-            End If
-        Next j
-    Next i
-End Sub
 
+End Sub
 
 Private Sub 公文正文()
     For i = 1 To ActiveDocument.Paragraphs.Count
-        With ActiveDocument.Paragraphs(i).Range.Font
-            .NameFarEast = "仿宋_GB2312"
-            .NameAscii = "仿宋_GB2312"
-            .NameOther = "Times New Roman"
-            .name = "仿宋_GB2312"
-            .Size = 16
-        End With
-        With ActiveDocument.Paragraphs(i).Range.ParagraphFormat
-            .LeftIndent = CentimetersToPoints(0)
-            .RightIndent = CentimetersToPoints(0)
-            .SpaceBefore = 0
-            .SpaceBeforeAuto = False
-            .SpaceAfter = 0
-            .SpaceAfterAuto = False
-            '.LineSpacingRule = wdLineSpaceExactly
-            .LineSpacing = 28
-            .Alignment = wdAlignParagraphJustify
-            If ActiveDocument.Paragraphs(i).Range.Information(wdWithInTable) = False Then
-                .CharacterUnitFirstLineIndent = 2
-            End If
-        End With
+    If ActiveDocument.Paragraphs(i).Range.InlineShapes.Count = 0 Then
+            With ActiveDocument.Paragraphs(i).Range.Font
+                .NameFarEast = "仿宋_GB2312"
+                .NameAscii = "仿宋_GB2312"
+                .NameOther = "Times New Roman"
+                .name = "仿宋_GB2312"
+                .Size = 16
+                .Bold = False
+            End With
+            With ActiveDocument.Paragraphs(i).Range.ParagraphFormat
+                .LeftIndent = CentimetersToPoints(0)
+                .RightIndent = CentimetersToPoints(0)
+                .SpaceBefore = 0
+                .SpaceBeforeAuto = False
+                .SpaceAfter = 0
+                .SpaceAfterAuto = False
+                .LineSpacingRule = wdLineSpaceExactly
+                .LineSpacing = 28
+                .Alignment = wdAlignParagraphJustify
+                If ActiveDocument.Paragraphs(i).Range.Information(wdWithInTable) = False Then
+                    .CharacterUnitFirstLineIndent = 2
+                End If
+            End With
+        End If
     Next
     
 End Sub
