@@ -1,56 +1,100 @@
-Attribute VB_Name = "¹«ÎÄ"
-Public Sub ¹«ÎÄÅÅ°æ()
-    ActiveDocument.TrackRevisions = False '¹Ø±ÕĞŞ¶©
-    Application.ScreenUpdating = False '¹Ø±ÕÆÁÄ»¸üĞÂ
-    ¹«ÎÄÒ³Ãæ
-    Çå³ı¿Õ¸ñ
-    Çå³ı¿ÕĞĞ
-    ¹«ÎÄÕıÎÄ
-    'ÊäÈë¸ñÊ½£º±êÌâÎ»ÓÚµÚÒ»ĞĞ£¬ÇÒÃ»ÓĞ·Ö¶Î
-    ¹«ÎÄ±êÌâ
-    'Ò»¼¶±êÌâÒÔ"Ò»¡¢"ÎªÀı£¬ÇÒÎ»ÓÚĞĞÊ×
-    Ò»¼¶±êÌâ
-    '¶ş¼¶±êÌâÒÔ"£¨Ò»£©"ÎªÀı£¬À¨ºÅÎªÖĞÎÄÀ¨ºÅ£¬ÇÒÎ»ÓÚĞĞÊ×
-    ¶ş¼¶±êÌâ
-    Í¼Æ¬±êÌâ
-    Í¼Æ¬¾ÓÖĞ
-    ±í×¢
-    ±í¸ñ¸ñÊ½
-    ¸½×¢
-    ÌáÒª
-    ¸½¼şËµÃ÷ĞĞÎ»µ÷Õû
-    ·¢ÎÄ»ú¹Ø¸ñÊ½µ÷Õû
-    ¸½¼şÕıÎÄ
-    ²åÈëÒ³Âë
-    Application.ScreenUpdating = True '»Ö¸´ÆÁÄ»¸üĞÂ
+Public Sub å…¬æ–‡æ’ç‰ˆ()
+    If Application.Documents.Count = 0 Then
+        Exit Sub
+    End If
+    ActiveDocument.TrackRevisions = False 'å…³é—­ä¿®è®¢
+    Application.ScreenUpdating = False 'å…³é—­å±å¹•æ›´æ–°
+    å…¬æ–‡é¡µé¢
+    æ¸…é™¤ç©ºæ ¼
+    æ¸…é™¤ç©ºè¡Œ
+    å…¬æ–‡æ­£æ–‡
+    å…¬æ–‡æ ‡é¢˜ 'è¾“å…¥æ ¼å¼ï¼šæ ‡é¢˜ä½äºç¬¬ä¸€è¡Œï¼Œä¸”æ²¡æœ‰åˆ†æ®µ
+    é™„ä»¶æ ‡é¢˜
+    ä¸€çº§æ ‡é¢˜ 'ä¸€çº§æ ‡é¢˜ä»¥"ä¸€ã€"ä¸ºä¾‹ï¼Œä¸”ä½äºè¡Œé¦–
+    äºŒçº§æ ‡é¢˜ 'äºŒçº§æ ‡é¢˜ä»¥"ï¼ˆä¸€ï¼‰"ä¸ºä¾‹ï¼Œæ‹¬å·ä¸ºä¸­æ–‡æ‹¬å·ï¼Œä¸”ä½äºè¡Œé¦–
+    å›¾ç‰‡æ ‡é¢˜
+    å›¾ç‰‡å±…ä¸­
+    è¡¨æ³¨
+    è¡¨æ ¼æ ¼å¼
+    é™„æ³¨
+    æè¦
+    é™„ä»¶è¯´æ˜è¡Œä½è°ƒæ•´
+    å‘æ–‡æœºå…³æ ¼å¼è°ƒæ•´
+    æ’å…¥é¡µç 
+    Application.ScreenUpdating = True 'æ¢å¤å±å¹•æ›´æ–°
+    Selection.HomeKey unit:=wdStory
 End Sub
 
-'Çå³ı¶ÎÂäÄ©Î²
+Private Sub æ’å…¥é¡µç 2()
+    '
+    '
+    With ActiveDocument.Sections(1).Footers(wdHeaderFooterPrimary)
+        Set rng = .Range
+        rng.Font.Size = 16
+        rng.Font.name = "Times New Roman"
+        rng.Text = "- "
+        rng.Collapse wdCollapseEnd
+        ActiveDocument.Fields.Add rng, wdFieldEmpty, "Page"
+        Set rng = .Range
+        rng.Collapse wdCollapseEnd
+        rng.Text = " -"
+        .Range.Fields.update
+        .Range.ParagraphFormat.Alignment = wdAlignParagraphCenter
+    End With
+    If ActiveWindow.View.SplitSpecial <> wdPaneNone Then
+        ActiveWindow.Panes(2).Close
+    End If
+    If ActiveWindow.ActivePane.View.Type = wdNormalView Or ActiveWindow. _
+        ActivePane.View.Type = wdOutlineView Then
+        ActiveWindow.ActivePane.View.Type = wdPrintView
+    End If
+    ActiveWindow.ActivePane.View.SeekView = wdSeekCurrentPageHeader
+    With Selection.ParagraphFormat
+        .Borders(wdBorderLeft).LineStyle = wdLineStyleNone
+        .Borders(wdBorderRight).LineStyle = wdLineStyleNone
+        .Borders(wdBorderTop).LineStyle = wdLineStyleNone
+        .Borders(wdBorderBottom).LineStyle = wdLineStyleNone
+        With .Borders
+            .DistanceFromTop = 1
+            .DistanceFromLeft = 4
+            .DistanceFromBottom = 1
+            .DistanceFromRight = 4
+            .Shadow = False
+        End With
+    End With
+    With Options
+        .DefaultBorderLineStyle = wdLineStyleSingle
+        .DefaultBorderLineWidth = wdLineWidth075pt
+        .DefaultBorderColor = wdColorAutomatic
+    End With
+    ActiveWindow.ActivePane.View.SeekView = wdSeekMainDocument
+End Sub
+'æ¸…é™¤æ®µè½æœ«å°¾
 Private Function clearParagraphEnd(str As String) As String
     clearParagraphEnd = Replace(Replace(str, Chr(10), ""), Chr(13), "")
 End Function
-'ÊäÈë¸ñÊ½£º¸½¼şÕıÎÄÇ°ÓĞ¸½¼ş»ò¸½¼ş+Êı×Ö£¬ÎŞÃ°ºÅ£¬ÇÒ¶ÀÁ¢³É¶Î¡£½ôÁÚÏÂÒ»ĞĞÎª±êÌâĞĞ
-Private Sub ¸½¼şÕıÎÄ()
-    'Ç°²åÈë·ÖÒ³·û
+'è¾“å…¥æ ¼å¼ï¼šé™„ä»¶æ­£æ–‡å‰æœ‰é™„ä»¶æˆ–é™„ä»¶+æ•°å­—ï¼Œæ— å†’å·ï¼Œä¸”ç‹¬ç«‹æˆæ®µã€‚ç´§é‚»ä¸‹ä¸€è¡Œä¸ºæ ‡é¢˜è¡Œ
+Private Sub é™„ä»¶æ ‡é¢˜()
+    'å‰æ’å…¥åˆ†é¡µç¬¦
     For i = 1 To ActiveDocument.Paragraphs.Count
         With ActiveDocument.Paragraphs(i).Range
-            rgntxt = Replace(Replace(.Text, Chr(10), ""), Chr(13), "")
+            rgntxt = Replace(Replace(Replace(.Text, Chr(10), ""), Chr(13), ""), Chr(12), "")
             Dim isfj As Boolean
             isfj = False
             For j = 1 To 20
-                If rgntxt = "¸½¼ş" & j Then
-                    Debug.Print "¸½¼ş" & j
+                If rgntxt = "é™„ä»¶" & j Then
+                    Debug.Print "é™„ä»¶" & j
                     isfj = True
                     Exit For
                 End If
             Next j
-            If rgntxt = "¸½¼ş" Or isfj = True Then
+            If rgntxt = "é™„ä»¶" Or isfj = True Then
                 .Select
                 With Selection.Font
-                    .NameFarEast = "ºÚÌå"
-                    .NameAscii = "ºÚÌå"
+                    .NameFarEast = "é»‘ä½“"
+                    .NameAscii = "é»‘ä½“"
                     .NameOther = "Times New Roman"
-                    .name = "ºÚÌå"
+                    .name = "é»‘ä½“"
                     .Size = 16
                     .Bold = False
                 End With
@@ -60,16 +104,22 @@ Private Sub ¸½¼şÕıÎÄ()
                     .CharacterUnitFirstLineIndent = 0
                     .FirstLineIndent = CentimetersToPoints(0)
                 End With
-                Selection.MoveLeft
-                Selection.InsertBreak Type:=wdPageBreak
-                '¸½¼ş±êÌâ
+                'æ’å…¥åˆ†é¡µç¬¦
+                If Left(Selection.Text, 1) <> Chr(12) Then
+                    Selection.MoveLeft
+                    Selection.InsertBreak Type:=wdPageBreak
+                    Selection.Expand unit:=wdParagraph
+                End If
+                'é™„ä»¶è¡Œä¸æ ‡é¢˜è¡Œé—´æ·»åŠ ç©ºè¡Œ
+                Selection.InsertAfter vbCrLf
+                'ä¸»æ ‡é¢˜æ ¼å¼
                 Selection.MoveDown
-                Selection.Expand Unit:=wdParagraph
+                Selection.Expand unit:=wdParagraph
                 With Selection.Font
-                    .NameFarEast = "ºÚÌå"
-                    .NameAscii = "ºÚÌå"
+                    .NameFarEast = "é»‘ä½“"
+                    .NameAscii = "é»‘ä½“"
                     .NameOther = "Times New Roman"
-                    .name = "ºÚÌå"
+                    .name = "é»‘ä½“"
                     .Size = 22
                     .Bold = False
                 End With
@@ -78,51 +128,58 @@ Private Sub ¸½¼şÕıÎÄ()
                     .CharacterUnitLeftIndent = 0
                     .CharacterUnitFirstLineIndent = 0
                     .FirstLineIndent = CentimetersToPoints(0)
+                    .LineUnitBefore = 1
+                    .LineUnitAfter = 1
                 End With
-                '¸½¼ş¸±±êÌâ
+                'é™„ä»¶å‰¯æ ‡é¢˜
                 Selection.MoveDown
-                Selection.Expand Unit:=wdParagraph
-                If Left(Right(Selection.Text, 2), 1) <> "¡£" And Left(Right(Selection.Text, 2), 1) <> "£º" Then
-                        '¸±±êÌâ
-                        With Selection.Font
-                            .NameFarEast = "¿¬Ìå_GB2312"
-                            .NameAscii = "¿¬Ìå_GB2312"
-                            .NameOther = "Times New Roman"
-                            .name = "¿¬Ìå_GB2312"
-                            .Size = 16
-                            .Bold = False
-                        End With
-                        With Selection.ParagraphFormat
-                            .LineSpacingRule = wdLineSpaceExactly
-                            .LineSpacing = 33
-                            .Alignment = wdAlignParagraphCenter
-                            .LineUnitBefore = 0
-                            .LineUnitAfter = 1
-                            .CharacterUnitFirstLineIndent = 0
-                            .FirstLineIndent = CentimetersToPoints(0)
-                        End With
-                        ActiveDocument.Paragraphs(i - 1).Range.ParagraphFormat.LineUnitAfter = 0
-                        ActiveDocument.Paragraphs(i - 1).Range.ParagraphFormat.SpaceAfter = 0
-                If Left(Right(Selection.Text, 2), 1) = "£º" Then
-                    '¶ÎÎ²ÓĞÃ°ºÅ£¬ÔòÊÇÌ§Í·
+                Selection.Expand unit:=wdParagraph
+                If Left(Right(Selection.Text, 2), 1) <> "ã€‚" And Left(Right(Selection.Text, 2), 1) <> "ï¼š" And Left(Selection.Text, 2) <> "ä¸€ã€" Then
+                    'å‰¯æ ‡é¢˜
+                    With Selection.Font
+                        .NameFarEast = "æ¥·ä½“_GB2312"
+                        .NameAscii = "æ¥·ä½“_GB2312"
+                        .NameOther = "Times New Roman"
+                        .name = "æ¥·ä½“_GB2312"
+                        .Size = 16
+                        .Bold = False
+                    End With
                     With Selection.ParagraphFormat
-                        .Alignment = wdAlignParagraphLeft
+                        .LineSpacingRule = wdLineSpaceExactly
+                        .LineSpacing = 33
+                        .Alignment = wdAlignParagraphCenter
+                        .LineUnitBefore = 0
+                        .SpaceBefore = 0
+                        .LineUnitAfter = 1
                         .CharacterUnitFirstLineIndent = 0
                         .FirstLineIndent = CentimetersToPoints(0)
                     End With
+                    'å¤„ç†ä¸»æ ‡é¢˜æ®µåé—´è·ä¸º0
+                    Selection.MoveLeft
+                    Selection.MoveUp unit:=wdParagraph
+                    Selection.Expand unit:=wdParagraph
+                    Selection.ParagraphFormat.LineUnitAfter = 0
+                    Selection.ParagraphFormat.SpaceAfter = 0
+                    If Left(Right(Selection.Text, 2), 1) = "ï¼š" Then
+                        'æ®µå°¾æœ‰å†’å·ï¼Œåˆ™æ˜¯æŠ¬å¤´
+                        With Selection.ParagraphFormat
+                            .Alignment = wdAlignParagraphLeft
+                            .CharacterUnitFirstLineIndent = 0
+                            .FirstLineIndent = CentimetersToPoints(0)
+                        End With
+                    End If
                 End If
-                End If
-                 Exit For
+                Exit For
             End If
         End With
     Next i
 End Sub
-'ÊäÈë¸ñÊ½£º¸½¼ş+ÖĞÎÄÃ°ºÅ»òÕß¸½¼ş+Êı×Ö±àºÅ+ÖĞÎÄÃ°ºÅ£¬ÇÒ¶ÀÁ¢³É¶Î
-'Êä³ö¸ñÊ½£ºÏÂ¿ÕÒ»ĞĞ£¬×ó¿ÕÁ½×Ö·û¡£*Çå³ıÃû³ÆºóµÄ±êµã·ûºÅ
-Private Sub ¸½¼şËµÃ÷ĞĞÎ»µ÷Õû()
-    Selection.HomeKey Unit:=wdStory
+'è¾“å…¥æ ¼å¼ï¼šé™„ä»¶+ä¸­æ–‡å†’å·æˆ–è€…é™„ä»¶+æ•°å­—ç¼–å·+ä¸­æ–‡å†’å·ï¼Œä¸”ç‹¬ç«‹æˆæ®µ
+'è¾“å‡ºæ ¼å¼ï¼šä¸‹ç©ºä¸€è¡Œï¼Œå·¦ç©ºä¸¤å­—ç¬¦ã€‚*æ¸…é™¤åç§°åçš„æ ‡ç‚¹ç¬¦å·
+Private Sub é™„ä»¶è¯´æ˜è¡Œä½è°ƒæ•´()
+    Selection.HomeKey unit:=wdStory
     With Selection.Find
-        .Text = "¸½¼ş£º"
+        .Text = "é™„ä»¶ï¼š"
         .Forward = True
         .Wrap = wdFindStop
         If .Execute Then
@@ -130,38 +187,38 @@ Private Sub ¸½¼şËµÃ÷ĞĞÎ»µ÷Õû()
         End If
     End With
     
-    Selection.HomeKey Unit:=wdStory
+    Selection.HomeKey unit:=wdStory
     With Selection.Find
-        .Text = "¸½¼ş^#£º"
+        .Text = "é™„ä»¶^#ï¼š"
         .Forward = True
         .Wrap = wdFindStop
         If .Execute Then
             Selection.InsertBefore (vbCrLf)
         End If
     End With
-    Selection.EndKey Unit:=wdStory
+    Selection.EndKey unit:=wdStory
 End Sub
 
-'ÊäÈë¸ñÊ½£º·¢ÎÄ»ú¹Ø¶ÎÂä½ôÁÚÓÚ¸½¼şËµÃ÷¶ÎÂäÏÂ·½
-'Êä³ö¸ñÊ½£ºÏÂ¿ÕÁ½ĞĞ£¬ÓÒ¿ÕËÄ×Ö·û
-Private Sub ·¢ÎÄ»ú¹Ø¸ñÊ½µ÷Õû()
-    '´ÓºóÍùÇ°²é"¸½¼ş+Êı×Ö±àºÅ£º"¿ªÍ·µÄµÚÒ»¸ö¶ÎÂä
+'è¾“å…¥æ ¼å¼ï¼šå‘æ–‡æœºå…³æ®µè½ç´§é‚»äºé™„ä»¶è¯´æ˜æ®µè½ä¸‹æ–¹
+'è¾“å‡ºæ ¼å¼ï¼šä¸‹ç©ºä¸¤è¡Œï¼Œå³ç©ºå››å­—ç¬¦
+Private Sub å‘æ–‡æœºå…³æ ¼å¼è°ƒæ•´()
+    'ä»åå¾€å‰æŸ¥"é™„ä»¶+æ•°å­—ç¼–å·ï¼š"å¼€å¤´çš„ç¬¬ä¸€ä¸ªæ®µè½
     hasAttachment = False
-    Selection.EndKey Unit:=wdStory
+    Selection.EndKey unit:=wdStory
     With Selection.Find
-        .Text = "¸½¼ş^#£º"
+        .Text = "é™„ä»¶^#ï¼š"
         .Forward = False
         .Wrap = wdFindStop
         If .Execute Then
             hasAttachment = True
         End If
     End With
-    'Ç°Ãæ¶¨Î»µ½ÁË£¬ºóÃæ²»ÔÙ¶¨Î»
+    'å‰é¢å®šä½åˆ°äº†ï¼Œåé¢ä¸å†å®šä½
     If hasAttachment = False Then
-        '´ÓÇ°Íùºó²é"¸½¼ş£º"¿ªÍ·µÄµÚÒ»¸ö¶ÎÂä
-        Selection.HomeKey Unit:=wdStory
+        'ä»å‰å¾€åæŸ¥"é™„ä»¶ï¼š"å¼€å¤´çš„ç¬¬ä¸€ä¸ªæ®µè½
+        Selection.HomeKey unit:=wdStory
         With Selection.Find
-            .Text = "¸½¼ş£º"
+            .Text = "é™„ä»¶ï¼š"
             .Forward = True
             .Wrap = wdFindStop
             If .Execute Then
@@ -169,23 +226,23 @@ Private Sub ·¢ÎÄ»ú¹Ø¸ñÊ½µ÷Õû()
             End If
         End With
     End If
-    'Èç¹ûÃ»ÓĞ¸½¼şËµÃ÷£¬¶¨Î»µ½ÎÄµµ×îºó£¬Éè¶¨ÎªºóÃæÃ»ÓĞ¿ÕĞĞ
+    'å¦‚æœæ²¡æœ‰é™„ä»¶è¯´æ˜ï¼Œå®šä½åˆ°æ–‡æ¡£æœ€åï¼Œè®¾å®šä¸ºåé¢æ²¡æœ‰ç©ºè¡Œ
     If hasAttachment = False Then
-        Selection.EndKey Unit:=wdStory
-        Selection.MoveUp Unit:=wdLine, Count:=2
+        Selection.EndKey unit:=wdStory
+        Selection.MoveUp unit:=wdLine, Count:=2
     End If
-    '´¦Àí¸ñÊ½
-    Selection.Expand Unit:=wdParagraph
+    'å¤„ç†æ ¼å¼
+    Selection.Expand unit:=wdParagraph
     Selection.InsertAfter (vbCrLf)
     Selection.InsertAfter (vbCrLf)
-    ·¢ÎÄ»ú¹Ø¸ñÊ½
+    å‘æ–‡æœºå…³æ ¼å¼
 End Sub
 
-Private Sub ·¢ÎÄ»ú¹Ø¸ñÊ½()
+Private Sub å‘æ–‡æœºå…³æ ¼å¼()
     Selection.MoveDown
     Selection.HomeKey
     Selection.EndKey Extend:=wdExtend
-    Selection.MoveDown Unit:=wdLine, Extend:=wdExtend
+    Selection.MoveDown unit:=wdLine, Extend:=wdExtend
     Selection.EndKey Extend:=wdExtend
     With Selection.ParagraphFormat
         .Alignment = wdAlignParagraphRight
@@ -195,122 +252,123 @@ Private Sub ·¢ÎÄ»ú¹Ø¸ñÊ½()
     End With
 End Sub
 
-'Çå³ıÊÖ¶¯·Ö¶Î·û¡¢ÌØÊâ¸ñÊ½×Ö·û¡¢Trim¿Õ¸ñ
-Private Sub Çå³ı¿Õ¸ñ()
+'æ¸…é™¤æ‰‹åŠ¨åˆ†æ®µç¬¦ã€ç‰¹æ®Šæ ¼å¼å­—ç¬¦ã€Trimç©ºæ ¼
+Private Sub æ¸…é™¤ç©ºæ ¼()
     
     pn = ActiveDocument.Paragraphs.Count
     For i = 1 To pn
-        If ActiveDocument.Paragraphs(i).Range.Information(wdWithInTable) = False And ActiveDocument.Paragraphs(i).Range.InlineShapes.Count = 0 And ActiveDocument.Paragraphs(i).Range.Find.Execute(FindText:="±í^#£º") = False Then
+        If ActiveDocument.Paragraphs(i).Range.Information(wdWithInTable) = False And ActiveDocument.Paragraphs(i).Range.InlineShapes.Count = 0 And ActiveDocument.Paragraphs(i).Range.Find.Execute(FindText:="è¡¨^#ï¼š") = False Then
             ActiveDocument.Paragraphs(i).Range.Text = Trim(ActiveDocument.Paragraphs(i).Range.Text)
         End If
     Next i
     With ActiveDocument.Range.Find
         .ClearFormatting
         .Replacement.ClearFormatting
+        .Wrap = wdFindStop
+        'æ‰‹åŠ¨æ¢è¡Œ
         .Text = "^l"
         .Replacement.Text = "^p"
-        .Wrap = wdFindStop
         .Execute Replace:=wdReplaceAll
-        '²»Ã÷×Ö·û£¬²»¼ä¶Ï¿Õ¸ñ
+        'ä¸æ˜å­—ç¬¦ï¼Œä¸é—´æ–­ç©ºæ ¼
         .Text = "^w^p"
         .Replacement.Text = "^p"
         .Execute Replace:=wdReplaceAll
-        '²»Ã÷×Ö·û£¬²»¼ä¶Ï¿Õ¸ñ
+        'ä¸æ˜å­—ç¬¦ï¼Œä¸é—´æ–­ç©ºæ ¼
         .Text = "^p^w"
         .Replacement.Text = "^p"
         .Execute Replace:=wdReplaceAll
     End With
-'    For i = 1 To pn
-'    With ActiveDocument.Paragraphs(i).Range
-'        If .Information(wdWithInTable) = False And .InlineShapes.Count = 0 And .Find.Execute(FindText:="±í^#£º") = False And Left(.Text, 1) <> "Í¼" Then
-'        With .Find
-'        '²»Ã÷×Ö·û£¬²»¼ä¶Ï¿Õ¸ñ
-'        .Text = "^w"
-'        .Replacement.Text = ""
-'        .Execute Replace:=wdReplaceAll
-'        End With
-'        End If
-'    End With
-'    Next i
-
-End Sub
-
-Private Sub ±í¸ñ¸ñÊ½()
-            ' ½«ĞÂÎÄµµÖĞµÄ±í¸ñÓ¦ÓÃºê£º±í¸ñB
-        
-        For j = 1 To ActiveDocument.Tables.Count
-            ActiveDocument.Tables(j).Select
-            ±í¸ñB
-        Next j
-End Sub
-
-'ÊäÈë¸ñÊ½£ºÍ¼Æ¬ÎªÇ¶ÈëÊ½
-Private Sub Í¼Æ¬¾ÓÖĞ()
-    Dim oShape As InlineShape
-        For Each oShape In ActiveDocument.InlineShapes
-            oShape.Range.ParagraphFormat.CharacterUnitFirstLineIndent = 0
-            oShape.Range.ParagraphFormat.FirstLineIndent = CentimetersToPoints(0)
-            oShape.Range.Paragraphs.Alignment = wdAlignParagraphCenter
-        Next
-End Sub
-
-Private Sub ¸½×¢()
-        Selection.WholeStory
-        With Selection.Find
-            .ClearFormatting
-            .MatchWholeWord = False
-            .Execute FindText:="¸½×¢£º"
-            If .Found = True Then
-                Selection.Expand Unit:=wdParagraph
-                Debug.Print Selection.Range.Text
-                With Selection.Font
-                    .NameFarEast = "·ÂËÎ"
-                    .NameAscii = "·ÂËÎ"
-                    .NameOther = "Times New Roman"
-                    .name = "·ÂËÎ"
-                    .Size = 12
-                    .Bold = False
-                End With
-            End If
-        End With
-End Sub
-
-Private Sub ÌáÒª()
-        Selection.WholeStory
-        With Selection.Find
-            .ClearFormatting
-            .MatchWholeWord = False
-            .Execute FindText:="ÄÚÈİÌáÒª£º"
-            If .Found = True Then
-                Selection.Expand Unit:=wdParagraph
-                Debug.Print Selection.Range.Text
-                With Selection.Font
-                    .NameFarEast = "·ÂËÎ"
-                    .NameAscii = "·ÂËÎ"
-                    .NameOther = "Times New Roman"
-                    .name = "·ÂËÎ"
-                    .Size = 14
-                    .Bold = False
-                End With
-            End If
-        End With
-End Sub
-
-Private Sub Çå³ı¿ÕĞĞ()
-
-    For Each i In ActiveDocument.Paragraphs
-         If Len(Trim(i.Range.Text)) = 1 Then
-            i.Range.Delete
-        End If
+    '    For i = 1 To pn
+    '    With ActiveDocument.Paragraphs(i).Range
+    '        If .Information(wdWithInTable) = False And .InlineShapes.Count = 0 And .Find.Execute(FindText:="è¡¨^#ï¼š") = False And Left(.Text, 1) <> "å›¾" Then
+    '        With .Find
+    '        'ä¸æ˜å­—ç¬¦ï¼Œä¸é—´æ–­ç©ºæ ¼
+    '        .Text = "^w"
+    '        .Replacement.Text = ""
+    '        .Execute Replace:=wdReplaceAll
+    '        End With
+    '        End If
+    '    End With
+    '    Next i
     
+End Sub
+
+Private Sub è¡¨æ ¼æ ¼å¼()
+    ' å°†æ–°æ–‡æ¡£ä¸­çš„è¡¨æ ¼åº”ç”¨å®ï¼šè¡¨æ ¼B
+    
+    For j = 1 To ActiveDocument.Tables.Count
+        ActiveDocument.Tables(j).Select
+        è¡¨æ ¼B
+    Next j
+End Sub
+
+'è¾“å…¥æ ¼å¼ï¼šå›¾ç‰‡ä¸ºåµŒå…¥å¼
+Private Sub å›¾ç‰‡å±…ä¸­()
+    Dim oShape As InlineShape
+    For Each oShape In ActiveDocument.InlineShapes
+        oShape.Range.ParagraphFormat.CharacterUnitFirstLineIndent = 0
+        oShape.Range.ParagraphFormat.FirstLineIndent = CentimetersToPoints(0)
+        oShape.Range.Paragraphs.Alignment = wdAlignParagraphCenter
     Next
 End Sub
 
-Private Sub ¹«ÎÄÒ³Ãæ()
-'
-' Macro17 Macro
-' ºêÔÚ 2013-4-2 ÓÉ ´÷ºê¹ú: Â¼ÖÆ
-'
+Private Sub é™„æ³¨()
+    Selection.WholeStory
+    With Selection.Find
+        .ClearFormatting
+        .MatchWholeWord = False
+        .Execute FindText:="é™„æ³¨ï¼š"
+        If .Found = True Then
+            Selection.Expand unit:=wdParagraph
+            Debug.Print Selection.Range.Text
+            With Selection.Font
+                .NameFarEast = "ä»¿å®‹"
+                .NameAscii = "ä»¿å®‹"
+                .NameOther = "Times New Roman"
+                .name = "ä»¿å®‹"
+                .Size = 12
+                .Bold = False
+            End With
+        End If
+    End With
+End Sub
+
+Private Sub æè¦()
+    Selection.WholeStory
+    With Selection.Find
+        .ClearFormatting
+        .MatchWholeWord = False
+        .Execute FindText:="å†…å®¹æè¦ï¼š"
+        If .Found = True Then
+            Selection.Expand unit:=wdParagraph
+            Debug.Print Selection.Range.Text
+            With Selection.Font
+                .NameFarEast = "ä»¿å®‹"
+                .NameAscii = "ä»¿å®‹"
+                .NameOther = "Times New Roman"
+                .name = "ä»¿å®‹"
+                .Size = 14
+                .Bold = False
+            End With
+        End If
+    End With
+End Sub
+
+Private Sub æ¸…é™¤ç©ºè¡Œ()
+    
+    For Each i In ActiveDocument.Paragraphs
+        If Len(Trim(i.Range.Text)) = 1 Then
+            i.Range.Delete
+        End If
+        
+    Next
+End Sub
+
+Private Sub å…¬æ–‡é¡µé¢()
+    '
+    ' Macro17 Macro
+    ' å®åœ¨ 2013-4-2 ç”± æˆ´å®å›½: å½•åˆ¶
+    '
     With ActiveDocument.Styles(wdStyleNormal).Font
         If .NameFarEast = .NameAscii Then
             .NameAscii = ""
@@ -345,19 +403,97 @@ Private Sub ¹«ÎÄÒ³Ãæ()
         .LayoutMode = wdLayoutModeLineGrid
     End With
 End Sub
+Private Sub æ’å…¥é¡µç ()
+    '
+    ' è§„èŒƒå…¬æ–‡é¡µç ï¼Œå¥‡å¶åˆ†å¼€
+    '
+    '
+    Application.ScreenUpdating = False
+    With ActiveDocument.Sections(1)
+        .PageSetup.OddAndEvenPagesHeaderFooter = True
+        With .Footers(wdHeaderFooterPrimary)
+            With .PageNumbers
+                .Add PageNumberAlignment:=wdAlignPageNumberRight
+                .NumberStyle = wdPageNumberStyleNumberInDash
+            End With
+            With .Range.Frames(1)
+                .HorizontalPosition = wdFrameRight
+                With .Range.ParagraphFormat
+                    .Alignment = wdAlignParagraphRight
+                    .CharacterUnitRightIndent = 1
+                End With
+            End With
+        End With
+        With .Footers(wdHeaderFooterEvenPages).Range.Frames(1)
+            .HorizontalPosition = wdFrameLeft
+            With .Range.ParagraphFormat
+                .Alignment = wdAlignParagraphLeft
+                .CharacterUnitLeftIndent = 1
+            End With
+        End With
+    End With
+    Application.ScreenUpdating = True
+    Selection.HomeKey unit:=wdStory
+    Selection.GoTo wdGoToPage, wdGoToNext, , "15 "
+    If ActiveWindow.View.SplitSpecial <> wdPaneNone Then
+        ActiveWindow.Panes(2).Close
+    End If
+    If ActiveWindow.ActivePane.View.Type = wdNormalView Or ActiveWindow.ActivePane.View.Type = wdOutlineView Then
+        ActiveWindow.ActivePane.View.Type = wdPrintView
+    End If
+    ActiveWindow.ActivePane.View.SeekView = wdSeekCurrentPageHeader
+    If Selection.HeaderFooter.IsHeader = True Then
+        ActiveWindow.ActivePane.View.SeekView = wdSeekCurrentPageFooter
+    Else
+        ActiveWindow.ActivePane.View.SeekView = wdSeekCurrentPageHeader
+    End If
+    Selection.WholeStory
+    Selection.Font.Size = 14
+    ActiveWindow.ActivePane.View.SeekView = wdSeekMainDocument
+    Selection.HomeKey unit:=wdStory
+    If ActiveWindow.View.SplitSpecial <> wdPaneNone Then
+        ActiveWindow.Panes(2).Close
+    End If
+    If ActiveWindow.ActivePane.View.Type = wdNormalView Or ActiveWindow.ActivePane.View.Type = wdOutlineView Then
+        ActiveWindow.ActivePane.View.Type = wdPrintView
+    End If
+    ActiveWindow.ActivePane.View.SeekView = wdSeekCurrentPageHeader
+    If Selection.HeaderFooter.IsHeader = True Then
+        ActiveWindow.ActivePane.View.SeekView = wdSeekCurrentPageFooter
+    Else
+        ActiveWindow.ActivePane.View.SeekView = wdSeekCurrentPageHeader
+    End If
+    Selection.WholeStory
+    Selection.Font.Size = 14
+    ActiveWindow.ActivePane.View.SeekView = wdSeekMainDocument
+End Sub
+Sub æ‰¹é‡æ’ç‰ˆ()
+    '
+    ' Macro1 Macro
+    ' å®åœ¨ 2013 å¹´ 11æœˆ 14 æ—¥ ç”± user å½•åˆ¶
+    '
+    If Application.Documents.Count = 0 Then
+        Exit Sub
+    End If
+    
+    Application.Run MacroName:="å…¬æ–‡æ’ç‰ˆ"
+    ActiveDocument.Save
+    ActiveWindow.Close
+    Application.Run MacroName:="æ‰¹é‡æ’ç‰ˆ"
+End Sub
 
-'ÊäÈë¸ñÊ½£ºÒÑ½øĞĞ¹ıÇå³ı¿Õ¸ñ¡¢¿ÕĞĞ£¬ÒÔ"£¨Ò»£©"¿ªÍ·£¬µ¥¶À³É¶Î£¬½áÎ²ÎŞ¾äºÅ
-Private Sub ¶ş¼¶±êÌâ()
-    Application.ScreenUpdating = False '¹Ø±ÕÆÁÄ»¸üĞÂ
-    nums = Array("Ò»", "¶ş", "Èı", "ËÄ", "Îå", "Áù", "Æß", "°Ë", "¾Å", "Ê®", "Ê®Ò»", "Ê®¶ş", "Ê®Èı", "Ê®ËÄ", "Ê®Îå", "Ê®Áù", "Ê®Æß", "Ê®°Ë", "Ê®¾Å", "¶şÊ®")
-   
+'è¾“å…¥æ ¼å¼ï¼šå·²è¿›è¡Œè¿‡æ¸…é™¤ç©ºæ ¼ã€ç©ºè¡Œï¼Œä»¥"ï¼ˆä¸€ï¼‰"å¼€å¤´ï¼Œå•ç‹¬æˆæ®µï¼Œç»“å°¾æ— å¥å·
+Private Sub äºŒçº§æ ‡é¢˜()
+    Application.ScreenUpdating = False 'å…³é—­å±å¹•æ›´æ–°
+    nums = Array("ä¸€", "äºŒ", "ä¸‰", "å››", "äº”", "å…­", "ä¸ƒ", "å…«", "ä¹", "å", "åä¸€", "åäºŒ", "åä¸‰", "åå››", "åäº”", "åå…­", "åä¸ƒ", "åå…«", "åä¹", "äºŒå")
+    
     pn = ActiveDocument.Paragraphs.Count
     Dim prg As Paragraph
     For i = 1 To ActiveDocument.Paragraphs.Count
         If i > ActiveDocument.Paragraphs.Count Then
             Exit For
         End If
-        '»ñÈ¡ÏÂÒ»¶ÎµÄ¿ªÍ·
+        'è·å–ä¸‹ä¸€æ®µçš„å¼€å¤´
         Dim nextPreStr As String
         If i + 1 <= ActiveDocument.Paragraphs.Count Then
             nextPreStr = Left(ActiveDocument.Paragraphs(i + 1), 2)
@@ -368,39 +504,39 @@ Private Sub ¶ş¼¶±êÌâ()
             numtxt = nums(j)
             numlen = Len(numtxt) + 2
             Debug.Print Left(prg.Range.Text, numlen)
-            '¶ş¼¶±êÌâÆ¥Åä³É¹¦
-            If Left(prg.Range.Text, numlen) = "£¨" & numtxt & "£©" Then
+            'äºŒçº§æ ‡é¢˜åŒ¹é…æˆåŠŸ
+            If Left(prg.Range.Text, numlen) = "ï¼ˆ" & numtxt & "ï¼‰" Then
                 Debug.Print numtxt
-                'Èç¹û¶ÎÎ²Ã»ÓĞ¾äºÅ£¬¸ñÊ½»¯¶ÎÂäºóÌí¼Ó¾äºÅ£¬ºÏ²¢ºóÃæ¶ÎÂä
-                If Left(Right(prg.Range.Text, 2), 1) <> "¡£" Then
-                    '¸ñÊ½»¯¶ÎÂä
+                'å¦‚æœæ®µå°¾æ²¡æœ‰å¥å·ï¼Œæ ¼å¼åŒ–æ®µè½åæ·»åŠ å¥å·ï¼Œåˆå¹¶åé¢æ®µè½
+                If Left(Right(prg.Range.Text, 2), 1) <> "ã€‚" Then
+                    'æ ¼å¼åŒ–æ®µè½
                     formatRng prg.Range
                     addJuHao prg.Range
                     combineNext prg.Range, nextPreStr
                 Else
-                    'Èç¹û¶ÎÎ²ÊÇ¾äºÅ£¬ÇÒ²»Ö¹Ò»¸ö£¬ÌáÈ¡³öµÚÒ»¾äÈ»ºó¸ñÊ½»¯
-                    If countStr(prg.Range.Text, "¡£") > 1 Then
+                    'å¦‚æœæ®µå°¾æ˜¯å¥å·ï¼Œä¸”ä¸æ­¢ä¸€ä¸ªï¼Œæå–å‡ºç¬¬ä¸€å¥ç„¶åæ ¼å¼åŒ–
+                    If countStr(prg.Range.Text, "ã€‚") > 1 Then
                         Dim trng As Range
                         Set trng = prg.Range
-                        trng.Find.Execute ("¡£")
+                        trng.Find.Execute ("ã€‚")
                         trng.SetRange prg.Range.start, trng.End
-                        '¸ñÊ½»¯µÚÒ»¾ä
+                        'æ ¼å¼åŒ–ç¬¬ä¸€å¥
                         formatRng trng
-                    'Èç¹û¶ÎÎ²ÊÇ¾äºÅÇÒÕû¶ÎÖ»ÓĞÒ»¸ö£¬¸ñÊ½»¯±¾¶Îºó£¬ºÏ²¢ºóÃæ¶ÎÂä
+                        'å¦‚æœæ®µå°¾æ˜¯å¥å·ä¸”æ•´æ®µåªæœ‰ä¸€ä¸ªï¼Œæ ¼å¼åŒ–æœ¬æ®µåï¼Œåˆå¹¶åé¢æ®µè½
                     Else
-                         If countStr(prg.Range.Text, "¡£") = 1 Then
-                            '¸ñÊ½»¯¶ÎÂä
+                        If countStr(prg.Range.Text, "ã€‚") = 1 Then
+                            'æ ¼å¼åŒ–æ®µè½
                             formatRng prg.Range
                             combineNext prg.Range, nextPreStr
-                         End If
+                        End If
                     End If
                     
                 End If
             End If
         Next j
     Next i
-
-    Application.ScreenUpdating = True '»Ö¸´ÆÁÄ»¸üĞÂ
+    
+    Application.ScreenUpdating = True 'æ¢å¤å±å¹•æ›´æ–°
 End Sub
 
 Private Function countStr(srcStr As String, findStr As String) As Integer
@@ -409,23 +545,23 @@ End Function
 
 Private Sub formatRng(rng As Range)
     With rng.Font
-        .NameFarEast = "¿¬Ìå_GB2312"
-        .NameAscii = "¿¬Ìå_GB2312"
-        .name = "¿¬Ìå_GB2312"
+        .NameFarEast = "æ¥·ä½“_GB2312"
+        .NameAscii = "æ¥·ä½“_GB2312"
+        .name = "æ¥·ä½“_GB2312"
         .Size = 16
         .Bold = False
     End With
-
+    
 End Sub
-'¶ÎÎ²¼Ó¾äºÅ
+'æ®µå°¾åŠ å¥å·
 Private Sub addJuHao(rng As Range)
     rng.MoveEnd wdWord, -1
-    rng.InsertAfter ("¡£")
+    rng.InsertAfter ("ã€‚")
 End Sub
 
-'ºÏ²¢ºó¶Î£¬²»ÂÛ¶ÎÎ²ÓĞÃ»ÓĞ¾äºÅ£¬Èç¹ûºóÃæÊÇÈı¼¶±êÌâµÄ1.£¬²»ºÏ²¢¶ÎÂä
+'åˆå¹¶åæ®µï¼Œä¸è®ºæ®µå°¾æœ‰æ²¡æœ‰å¥å·ï¼Œå¦‚æœåé¢æ˜¯ä¸‰çº§æ ‡é¢˜çš„1.ï¼Œä¸åˆå¹¶æ®µè½
 Private Sub combineNext(rng As Range, nextPreStr As String)
-    If nextPreStr = "1." Or nextPreStr = "1¡¢" Or nextPreStr = "1£®" Then
+    If nextPreStr = "1." Or nextPreStr = "1ã€" Or nextPreStr = "1ï¼" Then
         Exit Sub
     End If
     
@@ -434,33 +570,36 @@ Private Sub combineNext(rng As Range, nextPreStr As String)
         .Replacement.Text = ""
         .Execute Replace:=wdReplaceAll
     End With
-
+    
 End Sub
 
 
-Private Sub ¹«ÎÄ±êÌâ()
+Private Sub å…¬æ–‡æ ‡é¢˜()
     For i = 1 To ActiveDocument.Paragraphs.Count
         With ActiveDocument.Paragraphs(i).Range
             EndChar = Left(Right(.Text, 2), 1)
-            If EndChar <> "¡£" And EndChar <> "£º" Then
+            If EndChar <> "ã€‚" And EndChar <> "ï¼š" Then
                 Debug.Print EndChar
-                'Èç¹ûº¬ÓĞ"ºÅ""×Ö"µÈ£¬ÎªÎÄºÅ´¦Àí
-                If EndChar = "ºÅ" And InStr(.Text, "×Ö") > 0 Then
+                'å¦‚æœå«æœ‰"å·""å­—"ç­‰ï¼Œä¸ºæ–‡å·å¤„ç†
+                If EndChar = "å·" And InStr(.Text, "å­—") > 0 Then
                     With .ParagraphFormat
                         .Alignment = wdAlignParagraphCenter
                         .FirstLineIndent = CentimetersToPoints(0)
                         .CharacterUnitFirstLineIndent = 0
+                        .LineUnitAfter = 1
                     End With
+                    ActiveDocument.Paragraphs(i - 1).Range.ParagraphFormat.LineUnitAfter = 0
+                    ActiveDocument.Paragraphs(i - 1).Range.ParagraphFormat.SpaceAfter = 0
                 Else
-                    '¶ÎÎ²Ã»ÓĞ±êµã·ûºÅ£¬×÷Îª±êÌâ´¦Àí
+                    'æ®µå°¾æ²¡æœ‰æ ‡ç‚¹ç¬¦å·ï¼Œä½œä¸ºæ ‡é¢˜å¤„ç†
                     Dim isZBT
                     If i = 1 Then
-                        'Ö÷±êÌâ
+                        'ä¸»æ ‡é¢˜
                         With .Font
-                            .NameFarEast = "·½ÕıĞ¡±êËÎ_GBK"
-                            .NameAscii = "·½ÕıĞ¡±êËÎ_GBK"
+                            .NameFarEast = "æ–¹æ­£å°æ ‡å®‹ç®€ä½“"
+                            .NameAscii = "æ–¹æ­£å°æ ‡å®‹ç®€ä½“"
                             .NameOther = "Times New Roman"
-                            .name = "·½ÕıĞ¡±êËÎ_GBK"
+                            .name = "æ–¹æ­£å°æ ‡å®‹ç®€ä½“"
                             .Size = 22
                             .Bold = False
                         End With
@@ -474,12 +613,12 @@ Private Sub ¹«ÎÄ±êÌâ()
                             .FirstLineIndent = CentimetersToPoints(0)
                         End With
                     Else
-                        '¸±±êÌâ
+                        'å‰¯æ ‡é¢˜
                         With .Font
-                            .NameFarEast = "¿¬Ìå_GB2312"
-                            .NameAscii = "¿¬Ìå_GB2312"
+                            .NameFarEast = "æ¥·ä½“_GB2312"
+                            .NameAscii = "æ¥·ä½“_GB2312"
                             .NameOther = "Times New Roman"
-                            .name = "¿¬Ìå_GB2312"
+                            .name = "æ¥·ä½“_GB2312"
                             .Size = 16
                             .Bold = False
                         End With
@@ -497,15 +636,15 @@ Private Sub ¹«ÎÄ±êÌâ()
                     End If
                 End If
             Else
-                If Left(Right(.Text, 2), 1) = "£º" Then
-                    '¶ÎÎ²ÓĞÃ°ºÅ£¬ÔòÊÇÌ§Í·
+                If Left(Right(.Text, 2), 1) = "ï¼š" Then
+                    'æ®µå°¾æœ‰å†’å·ï¼Œåˆ™æ˜¯æŠ¬å¤´
                     With .ParagraphFormat
                         .Alignment = wdAlignParagraphLeft
                         .CharacterUnitFirstLineIndent = 0
                         .FirstLineIndent = CentimetersToPoints(0)
                     End With
                 End If
-                '·Ç±êÌâ£¬ÇÒÌ§Í·´¦ÀíÍê±Ï£¬Ìø³öÉ¨ÃèÑ­»·
+                'éæ ‡é¢˜ï¼Œä¸”æŠ¬å¤´å¤„ç†å®Œæ¯•ï¼Œè·³å‡ºæ‰«æå¾ªç¯
                 Exit For
             End If
         End With
@@ -513,46 +652,46 @@ Private Sub ¹«ÎÄ±êÌâ()
     
 End Sub
 
-Private Sub Í¼×¢0()
-    Selection.Expand Unit:=wdParagraph
+Private Sub å›¾æ³¨0()
+    Selection.Expand unit:=wdParagraph
     Debug.Print Selection.Range.Text
     With Selection.Font
-        .NameFarEast = "·ÂËÎ"
-        .NameAscii = "·ÂËÎ"
+        .NameFarEast = "ä»¿å®‹"
+        .NameAscii = "ä»¿å®‹"
         .NameOther = "Times New Roman"
-        .name = "·ÂËÎ"
+        .name = "ä»¿å®‹"
         .Size = 10
         .Bold = False
     End With
     With Selection.ParagraphFormat
-                        .FirstLineIndent = CentimetersToPoints(0)
+        .FirstLineIndent = CentimetersToPoints(0)
         .CharacterUnitFirstLineIndent = 0
     End With
     Selection.Range.Text = LTrim(Selection.Range.Text)
     Selection.Range.ParagraphFormat.Alignment = wdAlignParagraphCenter
 End Sub
 
-Private Sub ±í×¢()
-    Selection.HomeKey Unit:=wdStory
+Private Sub è¡¨æ³¨()
+    Selection.HomeKey unit:=wdStory
     With Selection.Find
         .Wrap = wdFindStop
         .Forward = True
         .ClearFormatting
         .MatchWholeWord = False
-        Do While .Execute(FindText:="±í^#£º")
+        Do While .Execute(FindText:="è¡¨^#ï¼š")
             If .Found = True Then
-                Selection.Expand Unit:=wdParagraph
+                Selection.Expand unit:=wdParagraph
                 Debug.Print Selection.Range.Text
                 With Selection.Font
-                    .NameFarEast = "·ÂËÎ"
-                    .NameAscii = "·ÂËÎ"
+                    .NameFarEast = "ä»¿å®‹"
+                    .NameAscii = "ä»¿å®‹"
                     .NameOther = "Times New Roman"
-                    .name = "·ÂËÎ"
+                    .name = "ä»¿å®‹"
                     .Size = 12
                     .Bold = False
                 End With
                 With Selection.ParagraphFormat
-                        .FirstLineIndent = CentimetersToPoints(0)
+                    .FirstLineIndent = CentimetersToPoints(0)
                     .CharacterUnitFirstLineIndent = 0
                 End With
                 Selection.Range.ParagraphFormat.Alignment = wdAlignParagraphCenter
@@ -562,59 +701,59 @@ Private Sub ±í×¢()
     End With
 End Sub
 
-'ÊäÈë¸ñÊ½£ºÍ¼Ò»»òÍ¼1²¢ºóÃæÓĞ¿Õ¸ñ
-Private Sub Í¼Æ¬±êÌâ()
+'è¾“å…¥æ ¼å¼ï¼šå›¾ä¸€æˆ–å›¾1å¹¶åé¢æœ‰ç©ºæ ¼
+Private Sub å›¾ç‰‡æ ‡é¢˜()
     Dim A As Variant
-        A = Array("Ò»", "¶ş", "Èı", "ËÄ", "Îå", "Áù", "Æß", "°Ë", "¾Å", "Ê®", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+    A = Array("ä¸€", "äºŒ", "ä¸‰", "å››", "äº”", "å…­", "ä¸ƒ", "å…«", "ä¹", "å", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     For j = 0 To UBound(A)
         Selection.WholeStory
-                
+        
         With Selection.Find
             .ClearFormatting
             .MatchWholeWord = False
-            .Execute FindText:="Í¼" & A(j) & " "
+            .Execute FindText:="å›¾" & A(j) & " "
             If .Found = True Then
-                Í¼×¢0
+                å›¾æ³¨0
             End If
         End With
         
         With Selection.Find
             .ClearFormatting
-             .MatchWholeWord = False
-            .Execute FindText:="Í¼" & A(j) & "¡¡"
+            .MatchWholeWord = False
+            .Execute FindText:="å›¾" & A(j) & "ã€€"
             If .Found = True Then
-                Í¼×¢0
+                å›¾æ³¨0
             End If
         End With
     Next j
     
-    Selection.HomeKey Unit:=wdStory
-
+    Selection.HomeKey unit:=wdStory
+    
 End Sub
 
-Private Sub Ò»¼¶±êÌâ()
-        nums = Array("Ò»", "¶ş", "Èı", "ËÄ", "Îå", "Áù", "Æß", "°Ë", "¾Å", "Ê®", "Ê®Ò»", "Ê®¶ş", "Ê®Èı", "Ê®ËÄ", "Ê®Îå", "Ê®Áù", "Ê®Æß", "Ê®°Ë", "Ê®¾Å", "¶şÊ®")
+Private Sub ä¸€çº§æ ‡é¢˜()
+    nums = Array("ä¸€", "äºŒ", "ä¸‰", "å››", "äº”", "å…­", "ä¸ƒ", "å…«", "ä¹", "å", "åä¸€", "åäºŒ", "åä¸‰", "åå››", "åäº”", "åå…­", "åä¸ƒ", "åå…«", "åä¹", "äºŒå")
+    
+    pn = ActiveDocument.Paragraphs.Count
+    Dim prg As Paragraph
+    For i = 1 To ActiveDocument.Paragraphs.Count
+        If i > ActiveDocument.Paragraphs.Count Then
+            Exit For
+        End If
         
-        pn = ActiveDocument.Paragraphs.Count
-        Dim prg As Paragraph
-        For i = 1 To ActiveDocument.Paragraphs.Count
-            If i > ActiveDocument.Paragraphs.Count Then
-                Exit For
-            End If
-            
-            Set prg = ActiveDocument.Paragraphs(i)
-           For j = 0 To UBound(nums)
-               numtxt = nums(j) & "¡¢"
-              numlen = Len(numtxt)
-                Debug.Print Left(prg.Range.Text, numlen)
-                If Left(prg.Range.Text, numlen) = numtxt Then
-                If Left(Right(prg.Range.Text, 2), 1) = "¡£" Then
-                        Dim trng As Range
-                        Set trng = prg.Range
-                        trng.Find.Execute ("¡£")
-                        trng.SetRange prg.Range.start, trng.End
-                        trng.InsertAfter vbCrLf
-                        oneTitleFormat trng
+        Set prg = ActiveDocument.Paragraphs(i)
+        For j = 0 To UBound(nums)
+            numtxt = nums(j) & "ã€"
+            numlen = Len(numtxt)
+            Debug.Print Left(prg.Range.Text, numlen)
+            If Left(prg.Range.Text, numlen) = numtxt Then
+                If Left(Right(prg.Range.Text, 2), 1) = "ã€‚" Then
+                    Dim trng As Range
+                    Set trng = prg.Range
+                    trng.Find.Execute ("ã€‚")
+                    trng.SetRange prg.Range.start, trng.End
+                    trng.InsertAfter vbCrLf
+                    oneTitleFormat trng
                 Else
                     oneTitleFormat prg.Range
                 End If
@@ -625,25 +764,37 @@ Private Sub Ò»¼¶±êÌâ()
 End Sub
 
 Sub oneTitleFormat(rng As Range)
-                With rng.Font
-                    .NameFarEast = "ºÚÌå"
-                    .NameAscii = "ºÚÌå"
-                    .NameOther = "Times New Roman"
-                    .name = "ºÚÌå"
-                    .Size = 16
-                    .Bold = False
-                End With
-
+    With rng.Font
+        .NameFarEast = "é»‘ä½“"
+        .NameAscii = "é»‘ä½“"
+        .NameOther = "Times New Roman"
+        .name = "é»‘ä½“"
+        .Size = 16
+        .Bold = False
+    End With
+    With rng.ParagraphFormat
+        .LeftIndent = CentimetersToPoints(0)
+        .RightIndent = CentimetersToPoints(0)
+        .SpaceBefore = 0
+        .SpaceBeforeAuto = False
+        .SpaceAfter = 0
+        .SpaceAfterAuto = False
+        .LineSpacingRule = wdLineSpaceExactly
+        .LineSpacing = 28
+        .Alignment = wdAlignParagraphJustify
+        .CharacterUnitFirstLineIndent = 2
+    End With
+    
 End Sub
 
-Private Sub ¹«ÎÄÕıÎÄ()
+Private Sub å…¬æ–‡æ­£æ–‡()
     For i = 1 To ActiveDocument.Paragraphs.Count
-    If ActiveDocument.Paragraphs(i).Range.InlineShapes.Count = 0 Then
+        If ActiveDocument.Paragraphs(i).Range.InlineShapes.Count = 0 Then
             With ActiveDocument.Paragraphs(i).Range.Font
-                .NameFarEast = "·ÂËÎ_GB2312"
-                .NameAscii = "·ÂËÎ_GB2312"
+                .NameFarEast = "ä»¿å®‹_GB2312"
+                .NameAscii = "ä»¿å®‹_GB2312"
                 .NameOther = "Times New Roman"
-                .name = "·ÂËÎ_GB2312"
+                .name = "ä»¿å®‹_GB2312"
                 .Size = 16
                 .Bold = False
             End With
@@ -667,146 +818,146 @@ Private Sub ¹«ÎÄÕıÎÄ()
 End Sub
 
 
-Private Sub ±í¸ñB()
-
-   On Error Resume Next
-   Application.ScreenUpdating = False '¹Ø±ÕÆÁÄ»¸üĞÂ
-   If Selection.Information(wdWithInTable) = True Then
-    Selection.Tables(1).Select
-    Selection.Tables(1).PreferredWidthType = wdPreferredWidthPoints
-    Selection.Tables(1).PreferredWidth = CentimetersToPoints(14.7)
-    Selection.Tables(1).Rows.LeftIndent = CentimetersToPoints(0)
-    Selection.Tables(1).AutoFitBehavior (wdAutoFitWindow)
-    Selection.Tables(1).AutoFitBehavior (wdAutoFitFixed)
-
-
-    Selection.Tables(1).Rows.Alignment = wdAlignRowLeft
-    With Selection.Tables(1)
-        .TopPadding = CentimetersToPoints(0)
-        .BottomPadding = CentimetersToPoints(0)
-        .LeftPadding = CentimetersToPoints(0)
-        .RightPadding = CentimetersToPoints(0)
-        .Spacing = 0
-        .AllowPageBreaks = True
-        .AllowAutoFit = False
-    End With
-    Selection.Cells.VerticalAlignment = wdCellAlignVerticalCenter
-    Selection.Columns.PreferredWidthType = wdPreferredWidthAuto
-    Selection.Columns.PreferredWidth = 0
-    With Selection.Cells(1)
-        .WordWrap = True
-        .FitText = False
-    End With
-    With Selection.Font
-        .NameFarEast = "ËÎÌå"
-        .NameAscii = "Times New Roman"
-        .NameOther = "Times New Roman"
-        .name = ""
-        .Size = 10.5
-        .Bold = False
-        .Italic = False
-    End With
+Private Sub è¡¨æ ¼B()
+    
+    On Error Resume Next
+    Application.ScreenUpdating = False 'å…³é—­å±å¹•æ›´æ–°
+    If Selection.Information(wdWithInTable) = True Then
+        Selection.Tables(1).Select
+        Selection.Tables(1).PreferredWidthType = wdPreferredWidthPoints
+        Selection.Tables(1).PreferredWidth = CentimetersToPoints(14.7)
+        Selection.Tables(1).Rows.LeftIndent = CentimetersToPoints(0)
+        Selection.Tables(1).AutoFitBehavior (wdAutoFitWindow)
+        Selection.Tables(1).AutoFitBehavior (wdAutoFitFixed)
+        
+        
+        Selection.Tables(1).Rows.Alignment = wdAlignRowLeft
+        With Selection.Tables(1)
+            .TopPadding = CentimetersToPoints(0)
+            .BottomPadding = CentimetersToPoints(0)
+            .LeftPadding = CentimetersToPoints(0)
+            .RightPadding = CentimetersToPoints(0)
+            .Spacing = 0
+            .AllowPageBreaks = True
+            .AllowAutoFit = False
+        End With
+        Selection.Cells.VerticalAlignment = wdCellAlignVerticalCenter
+        Selection.Columns.PreferredWidthType = wdPreferredWidthAuto
+        Selection.Columns.PreferredWidth = 0
+        With Selection.Cells(1)
+            .WordWrap = True
+            .FitText = False
+        End With
+        With Selection.Font
+            .NameFarEast = "å®‹ä½“"
+            .NameAscii = "Times New Roman"
+            .NameOther = "Times New Roman"
+            .name = ""
+            .Size = 10.5
+            .Bold = False
+            .Italic = False
+        End With
         With Selection.ParagraphFormat
-        .LeftIndent = CentimetersToPoints(0.1)
-        .RightIndent = CentimetersToPoints(0.1)
-        .SpaceBefore = 0
-        .SpaceBeforeAuto = False
-        .SpaceAfter = 0
-        .SpaceAfterAuto = False
-        .LineSpacingRule = wdLineSpaceAtLeast
-        .LineSpacing = 12
-        .CharacterUnitLeftIndent = 0
-        .CharacterUnitRightIndent = 0
-        .LineUnitBefore = 0
-        .LineUnitAfter = 0
-        .WordWrap = True
-    End With
-
-    Selection.ParagraphFormat.Alignment = wdAlignParagraphRight
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-    Selection.SelectColumn
-    Selection.ParagraphFormat.Alignment = wdAlignParagraphJustify
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-    Selection.SelectRow
-    Selection.ParagraphFormat.Alignment = wdAlignParagraphCenter
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-    Selection.Tables(1).Select
-    Selection.Borders(wdBorderTop).LineStyle = wdLineStyleNone
-    Selection.Borders(wdBorderLeft).LineStyle = wdLineStyleNone
-    Selection.Borders(wdBorderBottom).LineStyle = wdLineStyleNone
-    Selection.Borders(wdBorderRight).LineStyle = wdLineStyleNone
-    Selection.Borders(wdBorderHorizontal).LineStyle = wdLineStyleNone
-    Selection.Borders(wdBorderVertical).LineStyle = wdLineStyleNone
-    Selection.Borders(wdBorderDiagonalDown).LineStyle = wdLineStyleNone
-    Selection.Borders(wdBorderDiagonalUp).LineStyle = wdLineStyleNone
-    With Selection.Borders(wdBorderVertical)
-        .LineStyle = Options.DefaultBorderLineStyle
-        .LineWidth = Options.DefaultBorderLineWidth
-        .Color = Options.DefaultBorderColor
-    End With
-    With Selection.Borders(wdBorderTop)
-        .LineStyle = Options.DefaultBorderLineStyle
-        .LineWidth = Options.DefaultBorderLineWidth
-        .Color = Options.DefaultBorderColor
-    End With
-    With Selection.Borders(wdBorderBottom)
-        .LineStyle = Options.DefaultBorderLineStyle
-        .LineWidth = Options.DefaultBorderLineWidth
-        .Color = Options.DefaultBorderColor
-    End With
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-    Selection.SelectRow
-    With Selection.Borders(wdBorderBottom)
-        .LineStyle = Options.DefaultBorderLineStyle
-        .LineWidth = Options.DefaultBorderLineWidth
-        .Color = Options.DefaultBorderColor
-    End With
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-    Selection.Tables(1).Select
-    Selection.Rows.HeightRule = wdRowHeightAtLeast
-    Selection.Rows.Height = CentimetersToPoints(0.5)
-    Selection.Tables(1).Rows.LeftIndent = CentimetersToPoints(0)
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-    
-    'Application.Run MacroName:="Normal.NewMacros.tabletest"
-    
-    'Èç¹û±íÍ·Ö»ÓĞÒ»ĞĞ£¬Ôò½«µÚÒ»ĞĞµÄ¸ß¶ÈÉèÖÃÎª1ÀåÃ×
-    Selection.Tables(1).Cell(1, 1).Select
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-    Selection.MoveDown Unit:=wdLine, Count:=1
-    H1 = Selection.Information(wdStartOfRangeRowNumber)
-    If H1 = 2 Then
+            .LeftIndent = CentimetersToPoints(0.1)
+            .RightIndent = CentimetersToPoints(0.1)
+            .SpaceBefore = 0
+            .SpaceBeforeAuto = False
+            .SpaceAfter = 0
+            .SpaceAfterAuto = False
+            .LineSpacingRule = wdLineSpaceAtLeast
+            .LineSpacing = 12
+            .CharacterUnitLeftIndent = 0
+            .CharacterUnitRightIndent = 0
+            .LineUnitBefore = 0
+            .LineUnitAfter = 0
+            .WordWrap = True
+        End With
+        
+        Selection.ParagraphFormat.Alignment = wdAlignParagraphRight
+        Selection.MoveLeft unit:=wdCharacter, Count:=1
+        Selection.SelectColumn
+        Selection.ParagraphFormat.Alignment = wdAlignParagraphJustify
+        Selection.MoveLeft unit:=wdCharacter, Count:=1
+        Selection.SelectRow
+        Selection.ParagraphFormat.Alignment = wdAlignParagraphCenter
+        Selection.MoveLeft unit:=wdCharacter, Count:=1
+        Selection.Tables(1).Select
+        Selection.Borders(wdBorderTop).LineStyle = wdLineStyleNone
+        Selection.Borders(wdBorderLeft).LineStyle = wdLineStyleNone
+        Selection.Borders(wdBorderBottom).LineStyle = wdLineStyleNone
+        Selection.Borders(wdBorderRight).LineStyle = wdLineStyleNone
+        Selection.Borders(wdBorderHorizontal).LineStyle = wdLineStyleNone
+        Selection.Borders(wdBorderVertical).LineStyle = wdLineStyleNone
+        Selection.Borders(wdBorderDiagonalDown).LineStyle = wdLineStyleNone
+        Selection.Borders(wdBorderDiagonalUp).LineStyle = wdLineStyleNone
+        With Selection.Borders(wdBorderVertical)
+            .LineStyle = Options.DefaultBorderLineStyle
+            .LineWidth = Options.DefaultBorderLineWidth
+            .Color = Options.DefaultBorderColor
+        End With
+        With Selection.Borders(wdBorderTop)
+            .LineStyle = Options.DefaultBorderLineStyle
+            .LineWidth = Options.DefaultBorderLineWidth
+            .Color = Options.DefaultBorderColor
+        End With
+        With Selection.Borders(wdBorderBottom)
+            .LineStyle = Options.DefaultBorderLineStyle
+            .LineWidth = Options.DefaultBorderLineWidth
+            .Color = Options.DefaultBorderColor
+        End With
+        Selection.MoveLeft unit:=wdCharacter, Count:=1
+        Selection.SelectRow
+        With Selection.Borders(wdBorderBottom)
+            .LineStyle = Options.DefaultBorderLineStyle
+            .LineWidth = Options.DefaultBorderLineWidth
+            .Color = Options.DefaultBorderColor
+        End With
+        Selection.MoveLeft unit:=wdCharacter, Count:=1
+        Selection.Tables(1).Select
+        Selection.Rows.HeightRule = wdRowHeightAtLeast
+        Selection.Rows.Height = CentimetersToPoints(0.5)
+        Selection.Tables(1).Rows.LeftIndent = CentimetersToPoints(0)
+        Selection.MoveLeft unit:=wdCharacter, Count:=1
+        
+        'Application.Run MacroName:="Normal.NewMacros.tabletest"
+        
+        'å¦‚æœè¡¨å¤´åªæœ‰ä¸€è¡Œï¼Œåˆ™å°†ç¬¬ä¸€è¡Œçš„é«˜åº¦è®¾ç½®ä¸º1å˜ç±³
+        Selection.Tables(1).Cell(1, 1).Select
+        Selection.MoveLeft unit:=wdCharacter, Count:=1
+        Selection.MoveDown unit:=wdLine, Count:=1
+        H1 = Selection.Information(wdStartOfRangeRowNumber)
+        If H1 = 2 Then
+            Selection.Tables(1).Cell(1, 1).Select
+            Selection.SelectRow
+            Selection.Rows.Height = CentimetersToPoints(1#)
+        End If
+        
+        'å°†è¡¨æ ¼è®¾ç½®ä¸ºå±…ä¸­
+        Selection.MoveLeft unit:=wdCharacter, Count:=1
+        Selection.Tables(1).Rows.Alignment = wdAlignRowCenter
+        
+        'æŒ‰çª—å£è°ƒæ•´è¡¨æ ¼
+        Selection.Tables(1).Select
+        Selection.Tables(1).AutoFitBehavior (wdAutoFitWindow)
+        Selection.Tables(1).AutoFitBehavior (wdAutoFitWindow)
+        
+        'å›ºå®šè¡¨æ ¼çš„åˆ—å®½
+        Selection.Tables(1).Select
+        Selection.MoveLeft unit:=wdCharacter, Count:=1
+        Selection.Tables(1).AutoFitBehavior (wdAutoFitFixed)
+        Selection.Tables(1).AutoFitBehavior (wdAutoFitFixed)
+        
+        tabletest
+        A01_æ‰¹é‡åŠ ç²—è¡¨æ ¼ä¸­çš„ç‰¹å®šè¡Œ
+        A00_è¡¨æ ¼æ¯åˆ—å¯¹é½æ–¹å¼
+        A00_è¡¨æ ¼æ•°å­—åˆ—å³å¯¹é½
+        
         Selection.Tables(1).Cell(1, 1).Select
         Selection.SelectRow
-        Selection.Rows.Height = CentimetersToPoints(1#)
-    End If
-    
-    '½«±í¸ñÉèÖÃÎª¾ÓÖĞ
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-    Selection.Tables(1).Rows.Alignment = wdAlignRowCenter
-    
-    '°´´°¿Úµ÷Õû±í¸ñ
-    Selection.Tables(1).Select
-    Selection.Tables(1).AutoFitBehavior (wdAutoFitWindow)
-    Selection.Tables(1).AutoFitBehavior (wdAutoFitWindow)
-    
-    '¹Ì¶¨±í¸ñµÄÁĞ¿í
-    Selection.Tables(1).Select
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-    Selection.Tables(1).AutoFitBehavior (wdAutoFitFixed)
-    Selection.Tables(1).AutoFitBehavior (wdAutoFitFixed)
-    
-    tabletest
-    A01_ÅúÁ¿¼Ó´Ö±í¸ñÖĞµÄÌØ¶¨ĞĞ
-    A00_±í¸ñÃ¿ÁĞ¶ÔÆë·½Ê½
-    A00_±í¸ñÊı×ÖÁĞÓÒ¶ÔÆë
-    
-    Selection.Tables(1).Cell(1, 1).Select
-    Selection.SelectRow
         With Selection.Borders(wdBorderBottom)
-        .LineStyle = Options.DefaultBorderLineStyle
-        .LineWidth = Options.DefaultBorderLineWidth
-        .Color = Options.DefaultBorderColor
+            .LineStyle = Options.DefaultBorderLineStyle
+            .LineWidth = Options.DefaultBorderLineWidth
+            .Color = Options.DefaultBorderColor
         End With
         
         With Selection.Borders(wdBorderHorizontal)
@@ -814,24 +965,24 @@ Private Sub ±í¸ñB()
             .LineWidth = Options.DefaultBorderLineWidth
             .Color = Options.DefaultBorderColor
         End With
-
-    Selection.ParagraphFormat.Alignment = wdAlignParagraphCenter
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-    Selection.Tables(1).Cell(1, 1).Select
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-
-   Else
-    MsgBox "¡¾×¢Òâ¡¿²åÈëµã²»ÔÚ±í¸ñÖĞ£¡" & Chr(13) & _
-           "¡¡¡¡¡¡¡¡Çë½«²åÈëµã·Åµ½±í¸ñµÄÈÎÒâµ¥Ôª" & Chr(13) & _
-           "¡¡¡¡¡¡¡¡¸ñÖĞ£¬ È»ºóÔÙÖ´ĞĞ±¾ºê£¬Ğ»Ğ»£¡"
-   End If
-      Application.ScreenUpdating = True '»Ö¸´ÆÁÄ»¸üĞÂ
-
+        
+        Selection.ParagraphFormat.Alignment = wdAlignParagraphCenter
+        Selection.MoveLeft unit:=wdCharacter, Count:=1
+        Selection.Tables(1).Cell(1, 1).Select
+        Selection.MoveLeft unit:=wdCharacter, Count:=1
+        
+    Else
+        MsgBox "ã€æ³¨æ„ã€‘æ’å…¥ç‚¹ä¸åœ¨è¡¨æ ¼ä¸­ï¼" & Chr(13) & _
+            "ã€€ã€€ã€€ã€€è¯·å°†æ’å…¥ç‚¹æ”¾åˆ°è¡¨æ ¼çš„ä»»æ„å•å…ƒ" & Chr(13) & _
+            "ã€€ã€€ã€€ã€€æ ¼ä¸­ï¼Œ ç„¶åå†æ‰§è¡Œæœ¬å®ï¼Œè°¢è°¢ï¼"
+    End If
+    Application.ScreenUpdating = True 'æ¢å¤å±å¹•æ›´æ–°
+    
 End Sub
 
-Private Sub ²åÈëÒ³Âë()
-'Í¨¹ıÂ¼ÖÆºêĞŞ¸Ä'
-    Selection.Sections(1).Footers(1).PageNumbers.Add Pagenumberalignment:= _
+Private Sub æ’å…¥é¡µç 0()
+    'é€šè¿‡å½•åˆ¶å®ä¿®æ”¹'
+    Selection.Sections(1).Footers(1).PageNumbers.Add PageNumberAlignment:= _
         wdAlignPageNumberOutside, FirstPage:=True
     If ActiveWindow.View.SplitSpecial <> wdPaneNone Then
         ActiveWindow.Panes(2).Close
@@ -846,99 +997,99 @@ Private Sub ²åÈëÒ³Âë()
     Else
         ActiveWindow.ActivePane.View.SeekView = wdSeekCurrentPageHeader
     End If
-'    Selection.MoveLeft Unit:=wdCharacter, Count:=2
-'    Selection.TypeText Text:="¡ª"
-'    Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdExtend
-'    Selection.Copy
-'    Selection.MoveRight Unit:=wdCharacter, Count:=2
-'    Selection.PasteAndFormat (wdPasteDefault)
-'    Selection.MoveLeft Unit:=wdCharacter, Count:=3, Extend:=wdExtend
-'    Selection.Font.Size = 12
+    Selection.MoveLeft unit:=wdCharacter, Count:=2
+    Selection.TypeText Text:="â€”"
+    Selection.MoveLeft unit:=wdCharacter, Count:=1, Extend:=wdExtend
+    Selection.Copy
+    Selection.MoveRight unit:=wdCharacter, Count:=2
+    Selection.PasteAndFormat (wdPasteDefault)
+    Selection.MoveLeft unit:=wdCharacter, Count:=3, Extend:=wdExtend
+    Selection.Font.Size = 12
     ActiveWindow.ActivePane.View.SeekView = wdSeekMainDocument
 End Sub
 
 
 Private Sub tabletest()
-  Dim myrng As Range
-   Dim MyTab As Table
-   
-   If Selection.Information(wdWithInTable) = True Then
+    Dim myrng As Range
+    Dim MyTab As Table
+    
+    If Selection.Information(wdWithInTable) = True Then
         Set myrng = Selection.Tables(1).Range
         Set MyTab = Selection.Tables(1)
-    MyTab.Cell(1, 1).Select
-    Selection.SelectRow
- '   Selection.MoveDown Unit:=wdLine, Count:=2, Extend:=wdExtend
- '   Selection.ParagraphFormat.Alignment = wdAlignParagraphCenter
-
-'   ¸Ä±äÄ¬ÈÏ±í¸ñÏßµÄÉèÖÃ£¬ÉèÖÃÎª150pt
-    With Options
-        .DefaultBorderLineStyle = wdLineStyleSingle
-        .DefaultBorderLineWidth = wdLineWidth150pt
-        .DefaultBorderColor = wdColorBlack
-    End With
+        MyTab.Cell(1, 1).Select
+        Selection.SelectRow
+        '   Selection.MoveDown Unit:=wdLine, Count:=2, Extend:=wdExtend
+        '   Selection.ParagraphFormat.Alignment = wdAlignParagraphCenter
+        
+        '   æ”¹å˜é»˜è®¤è¡¨æ ¼çº¿çš„è®¾ç½®ï¼Œè®¾ç½®ä¸º150pt
+        With Options
+            .DefaultBorderLineStyle = wdLineStyleSingle
+            .DefaultBorderLineWidth = wdLineWidth150pt
+            .DefaultBorderColor = wdColorBlack
+        End With
+        
+        MyTab.Select
+        
+        'æ”¹å˜è¡¨æ ¼é¡¶çº¿
+        With Selection.Borders(wdBorderTop)
+            .LineStyle = Options.DefaultBorderLineStyle
+            .LineWidth = Options.DefaultBorderLineWidth
+            .Color = Options.DefaultBorderColor
+        End With
+        
+        'æ”¹å˜è¡¨æ ¼åº•çº¿
+        With Selection.Borders(wdBorderBottom)
+            .LineStyle = Options.DefaultBorderLineStyle
+            .LineWidth = Options.DefaultBorderLineWidth
+            .Color = Options.DefaultBorderColor
+        End With
+        
+        '   æ”¹å˜é»˜è®¤è¡¨æ ¼çº¿çš„è®¾ç½®ï¼Œæ”¹å›åŸæ¥çš„é»˜è®¤å€¼ï¼ˆ025ptï¼‰
+        With Options
+            .DefaultBorderLineStyle = wdLineStyleSingle
+            .DefaultBorderLineWidth = wdLineWidth025pt
+            .DefaultBorderColor = wdColorBlack
+        End With
+        Selection.MoveLeft unit:=wdCharacter, Count:=1
+        
+    Else
+        MsgBox "ã€æ³¨æ„ã€‘æ’å…¥ç‚¹ä¸åœ¨è¡¨æ ¼ä¸­ï¼" & Chr(13) & _
+            "è¯·å°†æ’å…¥ç‚¹æ”¾åˆ°è¡¨æ ¼çš„ä»»æ„å•å…ƒæ ¼ä¸­ï¼Œ " & Chr(13) & _
+            "ç„¶åå†æ‰§è¡Œæœ¬å®ï¼Œè°¢è°¢ï¼"
+    End If
     
-    MyTab.Select
-    
-'¸Ä±ä±í¸ñ¶¥Ïß
-    With Selection.Borders(wdBorderTop)
-        .LineStyle = Options.DefaultBorderLineStyle
-        .LineWidth = Options.DefaultBorderLineWidth
-        .Color = Options.DefaultBorderColor
-    End With
-    
-'¸Ä±ä±í¸ñµ×Ïß
-    With Selection.Borders(wdBorderBottom)
-        .LineStyle = Options.DefaultBorderLineStyle
-        .LineWidth = Options.DefaultBorderLineWidth
-        .Color = Options.DefaultBorderColor
-    End With
-    
-'   ¸Ä±äÄ¬ÈÏ±í¸ñÏßµÄÉèÖÃ£¬¸Ä»ØÔ­À´µÄÄ¬ÈÏÖµ£¨025pt£©
-    With Options
-        .DefaultBorderLineStyle = wdLineStyleSingle
-        .DefaultBorderLineWidth = wdLineWidth025pt
-        .DefaultBorderColor = wdColorBlack
-    End With
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-     
-Else
-    MsgBox "¡¾×¢Òâ¡¿²åÈëµã²»ÔÚ±í¸ñÖĞ£¡" & Chr(13) & _
-           "Çë½«²åÈëµã·Åµ½±í¸ñµÄÈÎÒâµ¥Ôª¸ñÖĞ£¬ " & Chr(13) & _
-           "È»ºóÔÙÖ´ĞĞ±¾ºê£¬Ğ»Ğ»£¡"
-   End If
-
 End Sub
 
 
 
-Private Sub A01_ÅúÁ¿¼Ó´Ö±í¸ñÖĞµÄÌØ¶¨ĞĞ()
-    '±í¸ñÖĞ´øÓĞ¡°Ò»¡¢¡±¡¢¡°¶ş¡¢¡±¡¢¡°Èı¡¢¡±µÄĞĞ¼Ó´Ö£¬×î¶à¼Ó´ÖÖÁ¡°¶şÊ®¡±
+Private Sub A01_æ‰¹é‡åŠ ç²—è¡¨æ ¼ä¸­çš„ç‰¹å®šè¡Œ()
+    'è¡¨æ ¼ä¸­å¸¦æœ‰â€œä¸€ã€â€ã€â€œäºŒã€â€ã€â€œä¸‰ã€â€çš„è¡ŒåŠ ç²—ï¼Œæœ€å¤šåŠ ç²—è‡³â€œäºŒåâ€
     Dim A As Variant
-    A = Array("Ò»", "¶ş", "Èı", "ËÄ", "Îå", "Áù", "Æß", "°Ë", "¾Å", "Ê®" _
-          , "Ê®Ò»", "Ê®¶ş", "Ê®Èı", "Ê®ËÄ", "Ê®Îå", "Ê®Áù", "Ê®Æß", "Ê®°Ë", "Ê®¾Å", "¶şÊ®")
+    A = Array("ä¸€", "äºŒ", "ä¸‰", "å››", "äº”", "å…­", "ä¸ƒ", "å…«", "ä¹", "å" _
+        , "åä¸€", "åäºŒ", "åä¸‰", "åå››", "åäº”", "åå…­", "åä¸ƒ", "åå…«", "åä¹", "äºŒå")
     Selection.Tables(1).Select
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
+    Selection.MoveLeft unit:=wdCharacter, Count:=1
     Selection.SelectColumn
     Set MyRange = Selection.Range
     
     For j = 0 To UBound(A)
         With Selection.Find
             .ClearFormatting
-            .Execute FindText:=A(j) & "¡¢"
+            .Execute FindText:=A(j) & "ã€"
             If .Found = True Then
-                .Parent.Expand Unit:=wdParagraph
+                .Parent.Expand unit:=wdParagraph
             Else
                 Exit For
             End If
         End With
         Selection.SelectRow
         Selection.Range.Font.Bold = True
-        Selection.MoveLeft Unit:=wdCharacter, Count:=1
+        Selection.MoveLeft unit:=wdCharacter, Count:=1
         MyRange.Select
     Next j
     
     Selection.Tables(1).Select
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
+    Selection.MoveLeft unit:=wdCharacter, Count:=1
     Selection.Tables(1).Cell(1, 2).Select
     Selection.SelectColumn
     Set MyRange = Selection.Range
@@ -946,23 +1097,23 @@ Private Sub A01_ÅúÁ¿¼Ó´Ö±í¸ñÖĞµÄÌØ¶¨ĞĞ()
     For j = 0 To UBound(A)
         With Selection.Find
             .ClearFormatting
-            .Execute FindText:=A(j) & "¡¢"
+            .Execute FindText:=A(j) & "ã€"
             If .Found = True Then
-                .Parent.Expand Unit:=wdParagraph
+                .Parent.Expand unit:=wdParagraph
             Else
                 Exit For
             End If
         End With
         Selection.SelectRow
         Selection.Range.Font.Bold = True
-        Selection.MoveLeft Unit:=wdCharacter, Count:=1
+        Selection.MoveLeft unit:=wdCharacter, Count:=1
         MyRange.Select
     Next j
 End Sub
 
-Private Sub A00_±í¸ñÃ¿ÁĞ¶ÔÆë·½Ê½()
+Private Sub A00_è¡¨æ ¼æ¯åˆ—å¯¹é½æ–¹å¼()
     
-    'ÎÄ×ÖÀ¸£º×ÖÊıÏà½ü¾ÓÖĞ£¬Ïà²î½Ï´ó¾Ó×ó£»Êı×ÖÀ¸¾ÓÓÒ
+    'æ–‡å­—æ ï¼šå­—æ•°ç›¸è¿‘å±…ä¸­ï¼Œç›¸å·®è¾ƒå¤§å±…å·¦ï¼›æ•°å­—æ å±…å³
     
     Dim MyTab As Table
     Dim LN() As Variant
@@ -970,79 +1121,79 @@ Private Sub A00_±í¸ñÃ¿ÁĞ¶ÔÆë·½Ê½()
     Dim TT As String
     
     On Error Resume Next
-    Application.ScreenUpdating = False '¹Ø±ÕÆÁÄ»¸üĞÂ
+    Application.ScreenUpdating = False 'å…³é—­å±å¹•æ›´æ–°
     If Selection.Information(wdWithInTable) = False Then
-        MsgBox "ÇëÑ¡Ôñ±í¸ñ£¡"
+        MsgBox "è¯·é€‰æ‹©è¡¨æ ¼ï¼"
         Exit Sub
     End If
-
+    
     Set MyTab = Selection.Tables(1)
     MyTab.Cell(1, 1).Select
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-    Selection.MoveDown Unit:=wdLine, Count:=1
+    Selection.MoveLeft unit:=wdCharacter, Count:=1
+    Selection.MoveDown unit:=wdLine, Count:=1
     H1 = Selection.Information(wdStartOfRangeRowNumber)
     
     For C = 1 To MyTab.Columns.Count
-    
-    For j = 0 To MyTab.Rows.Count
-        TT = MyTab.Cell(j + H1, C).Range.Text
-        TT = Left(TT, Len(TT) - 2)
-        L = Len(TT)
-        ReDim Preserve LN(j - 1)
-        LN(j - 2) = L
-    Next j
-    
-    M = 1
-    For i = 0 To UBound(LN)
-        T = LN(i)
-        If T > M Then M = T
-    Next i
-    
-    N = LN(0)
-    For i = 1 To UBound(LN) - 1
-        T = LN(i)
-        If T < N Then N = T
-    Next i
-    'MsgBox "×î´ó³¤¶ÈÎª£º" & M & "  ×îĞ¡³¤¶ÈÎª£º" & N & "  Ïà²î" & M - N
-    
-    MyTab.Cell(H1, C).Select
-    Selection.SelectColumn
-    If M - N < 3 Then
-        Selection.ParagraphFormat.Alignment = wdAlignParagraphCenter
-    Else
-        Selection.ParagraphFormat.Alignment = wdAlignParagraphLeft
-    End If
+        
+        For j = 0 To MyTab.Rows.Count
+            TT = MyTab.Cell(j + H1, C).Range.Text
+            TT = Left(TT, Len(TT) - 2)
+            L = Len(TT)
+            ReDim Preserve LN(j - 1)
+            LN(j - 2) = L
+        Next j
+        
+        M = 1
+        For i = 0 To UBound(LN)
+            T = LN(i)
+            If T > M Then M = T
+        Next i
+        
+        N = LN(0)
+        For i = 1 To UBound(LN) - 1
+            T = LN(i)
+            If T < N Then N = T
+        Next i
+        'MsgBox "æœ€å¤§é•¿åº¦ä¸ºï¼š" & M & "  æœ€å°é•¿åº¦ä¸ºï¼š" & N & "  ç›¸å·®" & M - N
+        
+        MyTab.Cell(H1, C).Select
+        Selection.SelectColumn
+        If M - N < 3 Then
+            Selection.ParagraphFormat.Alignment = wdAlignParagraphCenter
+        Else
+            Selection.ParagraphFormat.Alignment = wdAlignParagraphLeft
+        End If
     Next C
     
     MyTab.Cell(1, 1).Select
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-    Application.ScreenUpdating = True '»Ö¸´ÆÁÄ»¸üĞÂ
+    Selection.MoveLeft unit:=wdCharacter, Count:=1
+    Application.ScreenUpdating = True 'æ¢å¤å±å¹•æ›´æ–°
     
 End Sub
 
-Private Sub A00_±í¸ñÊı×ÖÁĞÓÒ¶ÔÆë()
+Private Sub A00_è¡¨æ ¼æ•°å­—åˆ—å³å¯¹é½()
     
     Dim MyTab As Table
     Dim L, H1 As Integer
     Dim TT As String
     
     On Error Resume Next
-    Application.ScreenUpdating = False '¹Ø±ÕÆÁÄ»¸üĞÂ
+    Application.ScreenUpdating = False 'å…³é—­å±å¹•æ›´æ–°
     If Selection.Information(wdWithInTable) = False Then
-        MsgBox "ÇëÑ¡Ôñ±í¸ñ£¡"
+        MsgBox "è¯·é€‰æ‹©è¡¨æ ¼ï¼"
         Exit Sub
     End If
-
+    
     Set MyTab = Selection.Tables(1)
     
-    '¶¨Î»±íÎÄ¿ªÊ¼ĞĞ
+    'å®šä½è¡¨æ–‡å¼€å§‹è¡Œ
     MyTab.Cell(1, 1).Select
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-    Selection.MoveDown Unit:=wdLine, Count:=1
+    Selection.MoveLeft unit:=wdCharacter, Count:=1
+    Selection.MoveDown unit:=wdLine, Count:=1
     H1 = Selection.Information(wdStartOfRangeRowNumber)
     
     For L = 2 To MyTab.Columns.Count
-        '¶¨Î»Ã¿ÁĞµÄ·Ç¿Õµ¥Ôª¸ñ
+        'å®šä½æ¯åˆ—çš„éç©ºå•å…ƒæ ¼
         Do While True
             TT = MyTab.Cell(H1, L).Range.Text
             TT = Left(TT, Len(TT) - 2)
@@ -1053,7 +1204,7 @@ Private Sub A00_±í¸ñÊı×ÖÁĞÓÒ¶ÔÆë()
                 H1 = H1 + 1
             End If
         Loop
-        'Èç¹ûÎªÊı×ÖÁĞ£¬ÔòÕûÁĞÓÒ¶ÔÆë
+        'å¦‚æœä¸ºæ•°å­—åˆ—ï¼Œåˆ™æ•´åˆ—å³å¯¹é½
         If Abs(Val(TT)) > 0 Then
             MyTab.Cell(H1, L).Select
             Selection.SelectColumn
@@ -1061,7 +1212,7 @@ Private Sub A00_±í¸ñÊı×ÖÁĞÓÒ¶ÔÆë()
         End If
     Next L
     MyTab.Cell(1, 1).Select
-    Selection.MoveLeft Unit:=wdCharacter, Count:=1
-    Application.ScreenUpdating = True '»Ö¸´ÆÁÄ»¸üĞÂ
+    Selection.MoveLeft unit:=wdCharacter, Count:=1
+    Application.ScreenUpdating = True 'æ¢å¤å±å¹•æ›´æ–°
 End Sub
 
