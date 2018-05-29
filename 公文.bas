@@ -17,9 +17,10 @@ Private Sub 自动排版(pbtype As Integer)
     ActiveDocument.TrackRevisions = False '关闭修订
     Application.ScreenUpdating = False '关闭屏幕更新
     公文页面
+    公文正文
+    公文正文
     清除空格
     清除空行
-    公文正文
     公文标题 '输入格式：标题位于第一行，且没有分段
     附件标题
     一级标题 '一级标题以"一、"为例，且位于行首
@@ -258,12 +259,14 @@ Private Sub 发文机关格式()
     Selection.EndKey Extend:=wdExtend
     Selection.MoveDown unit:=wdLine, Extend:=wdExtend
     Selection.EndKey Extend:=wdExtend
+    If InStr(Selection.Text, "年") > 0 And InStr(Selection.Text, "月") > 0 And InStr(Selection.Text, "日") > 0 Then
     With Selection.ParagraphFormat
         .Alignment = wdAlignParagraphRight
         .CharacterUnitRightIndent = 5.5
         '.CharacterUnitFirstLineIndent = 0
         '.FirstLineIndent = CentimetersToPoints(0)
     End With
+    End If
 End Sub
 
 '清除手动分段符、特殊格式字符、Trim空格
@@ -837,10 +840,14 @@ Private Sub 公文正文()
             With ActiveDocument.Paragraphs(i).Range.ParagraphFormat
                 .LeftIndent = CentimetersToPoints(0)
                 .RightIndent = CentimetersToPoints(0)
+                .RightIndent = 0
                 .SpaceBefore = 0
                 .SpaceBeforeAuto = False
                 .SpaceAfter = 0
+                .CharacterUnitRightIndent = 0
                 .SpaceAfterAuto = False
+                .LineUnitBefore = 0
+                .LineUnitAfter = 0
                 .LineSpacingRule = wdLineSpaceExactly
                 .LineSpacing = 28
                 .Alignment = wdAlignParagraphJustify
