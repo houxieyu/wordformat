@@ -1,4 +1,3 @@
-Attribute VB_Name = "公文"
 
 Public Sub 分析排版()
     自动排版 2
@@ -6,6 +5,10 @@ End Sub
 
 Public Sub 公文排版()
     自动排版 1
+End Sub
+
+Public Sub 通知排版()
+    自动排版 3
 End Sub
 Private Sub 自动排版(pbtype As Integer)
     If Application.Documents.Count = 0 Then
@@ -20,7 +23,7 @@ Private Sub 自动排版(pbtype As Integer)
     公文标题 '输入格式：标题位于第一行，且没有分段
     附件标题
     一级标题 '一级标题以"一、"为例，且位于行首
-    二级标题 '二级标题以"（一）"为例，括号为中文括号，且位于行首
+    二级标题 pbtype '二级标题以"（一）"为例，括号为中文括号，且位于行首
     图片标题
     图片居中
     表注
@@ -257,7 +260,7 @@ Private Sub 发文机关格式()
     Selection.EndKey Extend:=wdExtend
     With Selection.ParagraphFormat
         .Alignment = wdAlignParagraphRight
-        .CharacterUnitRightIndent = 8
+        .CharacterUnitRightIndent = 5.5
         '.CharacterUnitFirstLineIndent = 0
         '.FirstLineIndent = CentimetersToPoints(0)
     End With
@@ -476,6 +479,7 @@ Private Sub 插入页码()
         ActiveWindow.ActivePane.View.SeekView = wdSeekCurrentPageHeader
     End If
     Selection.WholeStory
+    Selection.Font.name = "宋体"
     Selection.Font.Size = 14
     ActiveWindow.ActivePane.View.SeekView = wdSeekMainDocument
 End Sub
@@ -509,7 +513,7 @@ Public Sub 批量分析排版()
 End Sub
 
 '输入格式：已进行过清除空格、空行，以"（一）"开头，单独成段，结尾无句号
-Private Sub 二级标题()
+Private Sub 二级标题(pbtype As Integer)
     Application.ScreenUpdating = False '关闭屏幕更新
     nums = Array("一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十")
     
@@ -536,7 +540,7 @@ Private Sub 二级标题()
                 '如果段尾没有句号，格式化段落后添加句号，合并后面段落
                 If Left(Right(prg.Range.Text, 2), 1) <> "。" Then
                     '格式化段落
-                    formatRng prg.Range
+                    formatRng prg.Range, pbtype
                     addJuHao prg.Range
                     combineNext prg.Range, nextPreStr
                 Else
@@ -547,12 +551,12 @@ Private Sub 二级标题()
                         trng.Find.Execute ("。")
                         trng.SetRange prg.Range.start, trng.End
                         '格式化第一句
-                        formatRng trng
+                        formatRng trng, pbtype
                         '如果段尾是句号且整段只有一个，格式化本段后，合并后面段落
                     Else
                         If countStr(prg.Range.Text, "。") = 1 Then
                             '格式化段落
-                            formatRng prg.Range
+                            formatRng prg.Range, pbtype
                             combineNext prg.Range, nextPreStr
                         End If
                     End If
@@ -569,11 +573,13 @@ Private Function countStr(srcStr As String, findStr As String) As Integer
     countStr = Len(srcStr) - Len(Replace(srcStr, findStr, ""))
 End Function
 
-Private Sub formatRng(rng As Range)
+Private Sub formatRng(rng As Range, pbtype As Integer)
     With rng.Font
+    If pbtype <> 3 Then
         .NameFarEast = "楷体_GB2312"
         .NameAscii = "楷体_GB2312"
         .name = "楷体_GB2312"
+    End If
         .Size = 16
         .Bold = False
     End With
@@ -639,6 +645,9 @@ Private Sub 公文标题()
                             .FirstLineIndent = CentimetersToPoints(0)
                         End With
                     Else
+                        If Left(.Text, 2) = "一、" Then
+                            Exit Sub
+                        End If
                         '副标题
                         With .Font
                             .NameFarEast = "楷体_GB2312"
@@ -822,6 +831,7 @@ Private Sub 公文正文()
                 .NameOther = "Times New Roman"
                 .name = "仿宋_GB2312"
                 .Size = 16
+                .ColorIndex = wdBlack
                 .Bold = False
             End With
             With ActiveDocument.Paragraphs(i).Range.ParagraphFormat
