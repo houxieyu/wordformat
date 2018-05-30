@@ -36,6 +36,7 @@ Private Sub 自动排版(pbtype As Integer)
     附件说明行位调整
     发文机关格式调整
     插入页码
+    插入页码
     Application.ScreenUpdating = True '恢复屏幕更新
     Selection.HomeKey unit:=wdStory
 End Sub
@@ -425,6 +426,16 @@ Private Sub 插入页码()
     ' 规范公文页码，奇偶分开
     '
     '
+    '清除页码
+    ActiveWindow.ActivePane.View.SeekView = wdSeekCurrentPageHeader
+    If Selection.HeaderFooter.IsHeader = True Then
+        ActiveWindow.ActivePane.View.SeekView = wdSeekCurrentPageFooter
+    Else
+        ActiveWindow.ActivePane.View.SeekView = wdSeekCurrentPageHeader
+    End If
+    Selection.WholeStory
+    Selection.Delete
+    
     Application.ScreenUpdating = False
     With ActiveDocument.Sections(1)
         .PageSetup.OddAndEvenPagesHeaderFooter = True
@@ -544,8 +555,11 @@ Private Sub 二级标题(pbtype As Integer)
                 If Left(Right(prg.Range.Text, 2), 1) <> "。" Then
                     '格式化段落
                     formatRng prg.Range, pbtype
-                    addJuHao prg.Range
-                    combineNext prg.Range, nextPreStr
+                    '如果是通知排版，不加句号，也不合并后段
+                    If pbtype <> 3 Then
+                        addJuHao prg.Range
+                        combineNext prg.Range, nextPreStr
+                    End If
                 Else
                     '如果段尾是句号，且不止一个，提取出第一句然后格式化
                     If countStr(prg.Range.Text, "。") > 1 Then
